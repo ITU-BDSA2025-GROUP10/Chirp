@@ -20,9 +20,9 @@ using (TextFieldParser parser = new TextFieldParser(@"Data/chirp_cli_db.csv"))
 
     foreach (Cheep cheep in cheeps)
     {
-        Console.WriteLine(cheep);
+        Console.WriteLine(cheep.author + " @ " + DateTimeOffset.FromUnixTimeSeconds(long.Parse(cheep.timeStamp)).ToLocalTime() + ": " + cheep.message);
 
     }
     
 }
-public record Cheep(string Author, string message, string timeStamp);
+public record Cheep(string author, string message, string timeStamp);
