@@ -21,7 +21,7 @@ using (TextFieldParser parser = new TextFieldParser(@"Data/chirp_cli_db.csv"))
     foreach (Cheep cheep in cheeps)
     {
         //TODO: currently prints the time offset for local time ("+02:00"), can possibly be fixed with a custom format string
-        Console.WriteLine(cheep.author + " @ " + DateTimeOffset.FromUnixTimeSeconds(long.Parse(cheep.timeStamp)).ToLocalTime() + ": " + cheep.message);
+        Console.WriteLine(cheep.author + " @ " + DateTimeOffset.FromUnixTimeSeconds(long.Parse(cheep.timeStamp)).LocalDateTime + ": " + cheep.message);
 
     }
     
