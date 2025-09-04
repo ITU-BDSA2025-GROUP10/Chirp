@@ -1,44 +1,29 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Linq;
+using CsvHelper;
+
 
 class Program
 {
+    public record Cheep(string Author, string Message, long Timestamp);
     static void Main()
     {
         DateTimeOffset localTime = DateTimeOffset.Now;
 
-        try
+        using (var reader = new StreamReader(@"Data/chirp_cli_db.csv"))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
-            using (StreamReader reader = new StreamReader(@"Data/chirp_cli_db.csv"))
-            {
-                string line;
-
-                while ((line = reader.ReadLine()) != null)
-                {
-                    Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
-
-                    string[] X = CSVParser.Split(line);
-
-                    long unixTime;
-                    if (long.TryParse(X[2], out unixTime))
-                    {
-                        DateTimeOffset utcTime = DateTimeOffset.FromUnixTimeSeconds(unixTime);
-                        string formatted = utcTime.ToLocalTime().ToString("MM-dd HH:mm:ss");
-
-                        Console.WriteLine($"{X[0]} @ {formatted}: {X[1]}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid timestamp");
-                    }
-                }
-            }
-        }
-        catch (IOException e)
+            var cheeps = csv.GetRecords<Cheep>();
+            foreach (var cheep in cheeps)
         {
-            Console.WriteLine("The file could not be read:");
-            Console.WriteLine(e.Message);
+            var time = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).ToLocalTime();
+            var timeString = time.ToString("dd/MM/yy HH:mm:ss");
+            Console.WriteLine($"{cheep.Author} @ {timeString}: {cheep.Message}");
         }
+        }
+        
     }
 }
