@@ -11,7 +11,9 @@ public static class UserInterface
         {
             var time = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).ToLocalTime();
             var timeString = time.ToString("dd/MM/yy HH:mm:ss");
-            Console.WriteLine($"{cheep.Author} @ {timeString:dd/MM/yy HH:mm:ss}: {cheep.Message}");
+
+            var msg = $"{cheep.Author} @ {timeString}: {cheep.Message}";
+            Console.WriteLine(msg);
 
         }
     }
