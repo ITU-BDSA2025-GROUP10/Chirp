@@ -1,4 +1,5 @@
 ﻿using SimpleDB;
+using docopt;
 namespace Chirp.CLI.Client;
 class Program
 {
