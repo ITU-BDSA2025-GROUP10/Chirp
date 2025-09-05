@@ -14,7 +14,7 @@ class Program
             var time = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).ToLocalTime();
             var timeString = time.ToString("dd/MM/yy HH:mm:ss");
             var msg = $"{cheep.Author} @ {timeString}: {cheep.Message}";
-            db.Store(cheep);
+            //db.Store(cheep);
             Console.WriteLine(msg);
         }
     }
