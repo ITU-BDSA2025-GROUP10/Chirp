@@ -5,7 +5,7 @@ using CsvHelper.Configuration;
 using System.Globalization;
 public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 {  
-    private readonly string _filePath = @"Data/chirp_cli_db.csv";
+    private readonly string _filePath = @"../../Data/chirp_cli_db.csv";
     public IEnumerable<T> Read(int? limit = null)
     {
         using (var reader = new StreamReader(_filePath))

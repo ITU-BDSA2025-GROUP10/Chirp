@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chirp.CLI.Client", "Chirp.CLI.Client", "{F74349FD-D184-8D8C-6097-80B7520BC8A9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chirp.CLI.Client", "src\Chirp.CLI.Client", "{F74349FD-D184-8D8C-6097-80B7520BC8A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.CLI", "Chirp.CLI.Client\Chirp.CLI.csproj", "{2040E25F-4EF1-4E9F-BC37-BDFF48D735A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.CLI", "src\Chirp.CLI.Client\Chirp.CLI.csproj", "{2040E25F-4EF1-4E9F-BC37-BDFF48D735A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
