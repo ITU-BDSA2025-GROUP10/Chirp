@@ -10,17 +10,90 @@ permissions:
   contents: write
 
 jobs:
-    build: 
-        name: Build
+  build:
+    name: Build
 
-        runs-on: ubutu-latest
-        steps: 
-            - name: Checkout
-            uses: actions/checkout@v5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
-            - name: Setup .NET
-            uses: actions/setup-dotnet@v5
-            with: 
-                dotnet-version: 8.0.x
-            
-            - name: 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+  test: 
+    name: Test
+    needs: Build
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: restore dependencies
+        run: dotnet restore
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+
+  prepRelease: 
+    name: prepare GitHub Release
+    needs: test
+
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  release:
+    name: publish to GitHub
+    needs: prepRelease
+
+    strategy: 
+      matrix:
+        platform: [ 'linux-x64', 'linux-arm64', 'osx-x64', 'osx-arm64', 'win-x64', 'win-arm64'  ]
+
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: publish
+      shell: bash
+      run: |
+          release_name="Chirp-${{ github.ref_name }}-${{ matrix.os }}"
+
+          dotnet publish "src/Chirp.CLI/Chirp.CLI.csproj" -r "${{ matrix.os }}" -o "${release_name}" --sc false -p:PublishSingleFile=True
+
+          7z a "${release_name}.zip" "${release_name}/."
+          7z d "${release_name}.zip" "*.pdb"
+
+          rm -r "${release_name}"
+      - name: upload release
+          uses: softprops/action-gh-release@v2
+          with: 
+            files: ${{ github.ref_name }}-*.zip
+            env: 
+              GiTHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
