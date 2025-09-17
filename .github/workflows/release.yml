@@ -1,0 +1,90 @@
+name: Release Chirp (.NET 8 single-file)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+# allow release creation
+permissions:
+  contents: write
+
+env:
+  # ← CHANGE to your .csproj path (relative to repo root)
+  PROJECT_PATH: src/Chirp/Chirp.csproj
+  # set to "true" if you also want ARM64 builds
+  INCLUDE_ARM: "false"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore "$PROJECT_PATH"
+
+      - name: Build (Release)
+        run: dotnet build "$PROJECT_PATH" -c Release --no-restore
+
+      - name: Test
+        run: dotnet test -c Release --no-build --verbosity normal
+
+      - name: Publish single-file executables (cross-compile)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APP_NAME="$(basename "$PROJECT_PATH" .csproj)"
+
+          # Required targets
+          RIDS=("win-x64" "osx-x64" "linux-x64")
+          # Optional ARM targets
+          if [[ "${INCLUDE_ARM}" == "true" ]]; then
+            RIDS+=("win-arm64" "osx-arm64" "linux-arm64")
+          fi
+
+          mkdir -p dist
+
+          for rid in "${RIDS[@]}"; do
+            out="publish/${rid}"
+            echo "Publishing for ${rid} -> ${out}"
+            dotnet publish "$PROJECT_PATH" \
+              -c Release \
+              -r "${rid}" \
+              -o "${out}" \
+              -p:PublishSingleFile=true \
+              -p:SelfContained=false \
+              --no-build
+
+            # Make unix binaries executable before zipping
+            if [[ "$rid" == linux-* || "$rid" == osx-* ]]; then
+              chmod +x "${out}/${APP_NAME}" || true
+            fi
+
+            zipname="dist/${APP_NAME}-${rid}.zip"
+            if [[ "$rid" == win-* ]]; then
+              (cd "$out" && zip -r "../../${zipname}" "${APP_NAME}.exe")
+            else
+              (cd "$out" && zip -r "../../${zipname}" "${APP_NAME}")
+            fi
+          done
+
+          echo "Artifacts generated:"
+          ls -lh dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
