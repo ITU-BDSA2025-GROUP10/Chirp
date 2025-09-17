@@ -3,8 +3,7 @@ run-name: ${{ github.actor }} is publishing release ${{ github.ref_name }}
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    tags: ["v*.*.*"]
 
 permissions:
   contents: write
@@ -28,9 +27,9 @@ jobs:
 
       - name: Build
         run: dotnet build --no-restore
-  test: 
+  test:
     name: Test
-    needs: Build
+    needs: build
 
     runs-on: ubuntu-latest
     steps:
@@ -48,27 +47,35 @@ jobs:
       - name: Test
         run: dotnet test --no-build --verbosity normal
 
-  prepRelease: 
+  prepRelease:
     name: prepare GitHub Release
     needs: test
 
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
-        env: 
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
+
   release:
     name: publish to GitHub
     needs: prepRelease
 
-    strategy: 
+    strategy:
       matrix:
-        platform: [ 'linux-x64', 'linux-arm64', 'osx-x64', 'osx-arm64', 'win-x64', 'win-arm64'  ]
+        platform:
+          [
+            "linux-x64",
+            "linux-arm64",
+            "osx-x64",
+            "osx-arm64",
+            "win-x64",
+            "win-arm64",
+          ]
 
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -78,22 +85,20 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: publish
-      shell: bash
-      run: |
-          release_name="Chirp-${{ github.ref_name }}-${{ matrix.os }}"
+        shell: bash
+        run: |
+          release_name="Chirp-${{ github.ref_name }}-${{ matrix.platform }}"
 
-          dotnet publish "src/Chirp.CLI/Chirp.CLI.csproj" -r "${{ matrix.os }}" -o "${release_name}" --sc false -p:PublishSingleFile=True
+          dotnet publish "src/Chirp.CLI/Chirp.CLI.csproj" -r "${{ matrix.platform }}" -o "${release_name}" --sc false -p:PublishSingleFile=True
 
           7z a "${release_name}.zip" "${release_name}/."
           7z d "${release_name}.zip" "*.pdb"
 
           rm -r "${release_name}"
+
       - name: upload release
-          uses: softprops/action-gh-release@v2
-          with: 
-            files: ${{ github.ref_name }}-*.zip
-            env: 
-              GiTHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Chirp-${{ github.ref_name }}-*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
