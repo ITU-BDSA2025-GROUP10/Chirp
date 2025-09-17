@@ -5,7 +5,7 @@ class Program
 {
     static void Main()
     {
-        CSVDatabase<Cheep> db = new CSVDatabase<Cheep>();
+        var db = CSVDatabase<Cheep>.Instance;
         var cheeps = db.Read();
 
         UserInterface.printCheep(cheeps);
