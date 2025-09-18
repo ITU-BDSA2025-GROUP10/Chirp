@@ -26,7 +26,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --configuration Release --no-restore
   test:
     name: Test
     needs: build
@@ -45,7 +45,7 @@ jobs:
         run: dotnet restore
 
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --configuration Release --no-build --verbosity normal
 
   prepRelease:
     name: prepare GitHub Release
@@ -89,7 +89,7 @@ jobs:
         run: |
           release_name="Chirp-${{ github.ref_name }}-${{ matrix.platform }}"
 
-          dotnet publish "src/Chirp.CLI/Chirp.CLI.csproj" -r "${{ matrix.platform }}" -o "${release_name}" --sc false -p:PublishSingleFile=True
+          dotnet publish "src/Chirp.CLI.Client/Chirp.CLI.csproj" -r "${{ matrix.platform }}" -o "${release_name}" --self-contained false -p:PublishSingleFile=True
 
           7z a "${release_name}.zip" "${release_name}/."
           7z d "${release_name}.zip" "*.pdb"
