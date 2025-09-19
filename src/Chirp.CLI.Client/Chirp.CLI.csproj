@@ -14,4 +14,12 @@
   <ItemGroup>
     <PackageReference Include="docopt.net" Version="0.8.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\Data\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  
 </Project>
