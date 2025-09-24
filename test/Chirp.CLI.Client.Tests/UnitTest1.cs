@@ -20,7 +20,7 @@ public class UnitTest1
         UserInterface.printCheep(cheeps);
         var output = writer.ToString().Trim();
 
-        Assert.Equal("Master Splinter @ 02.08.23 14.19.38: Welcome to the course!", output);
+        Assert.Equal("Master Splinter @ 02/08/23 14:19:38: Welcome to the course!", output);
     }
 }
 
