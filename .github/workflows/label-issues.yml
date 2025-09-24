@@ -10,9 +10,9 @@ jobs:
     permissions:
       issues: write
     steps:
-      - run: gh issue edit "$NUMBER" --add-label "$LABELS"
+      - run: gh issue edit "$NUMBER" --add-label"$LABELS"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.issue.number }}
-          LABELS: bug, documentation, enhancement, question, duplicate, good first issue, help wanted, invalid, wontfix
+          LABELS: bug,documentation,enhancement,question,duplicate,"good first issue","help wanted",invalid,wontfix
