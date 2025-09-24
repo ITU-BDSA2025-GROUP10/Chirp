@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Xunit;
 using Chirp.CLI.Client;
+using System.Globalization;
 
 namespace Chirp.CLI.Client.Tests;
 
@@ -20,7 +21,10 @@ public class UnitTest1
         UserInterface.printCheep(cheeps);
         var output = writer.ToString().Trim();
 
-        Assert.Equal("Master Splinter @ 02/08/23 14:19:38: Welcome to the course!", output);
+        var time = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).ToLocalTime();
+        var timeString = time.ToString("dd'/'MM'/'yy HH':'mm':'ss", CultureInfo.InvariantCulture);
+        var expected = $"{cheep.Author} @ {timeString}: {cheep.Message}";
+        Assert.Equal(expected, output);
     }
 }
 
