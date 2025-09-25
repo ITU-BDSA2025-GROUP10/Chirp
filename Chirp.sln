@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chirp.CLI.Client", "src\Chi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.CLI", "src\Chirp.CLI.Client\Chirp.CLI.csproj", "{2040E25F-4EF1-4E9F-BC37-BDFF48D735A0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8EE90736-73A3-446C-94B2-1EAB5DE9E5F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.Web", "src\Chirp.Web\Chirp.Web.csproj", "{66A749D9-1837-41DD-B4EB-5486A463C281}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,11 +33,24 @@ Global
 		{2040E25F-4EF1-4E9F-BC37-BDFF48D735A0}.Release|x64.Build.0 = Release|Any CPU
 		{2040E25F-4EF1-4E9F-BC37-BDFF48D735A0}.Release|x86.ActiveCfg = Release|Any CPU
 		{2040E25F-4EF1-4E9F-BC37-BDFF48D735A0}.Release|x86.Build.0 = Release|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Debug|x64.Build.0 = Debug|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Debug|x86.Build.0 = Debug|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Release|x64.ActiveCfg = Release|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Release|x64.Build.0 = Release|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Release|x86.ActiveCfg = Release|Any CPU
+		{66A749D9-1837-41DD-B4EB-5486A463C281}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2040E25F-4EF1-4E9F-BC37-BDFF48D735A0} = {F74349FD-D184-8D8C-6097-80B7520BC8A9}
+		{66A749D9-1837-41DD-B4EB-5486A463C281} = {8EE90736-73A3-446C-94B2-1EAB5DE9E5F5}
 	EndGlobalSection
 EndGlobal
