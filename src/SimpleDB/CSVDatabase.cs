@@ -3,9 +3,10 @@ using CsvHelper.Configuration;
 using System.Globalization;
 
 namespace SimpleDB;
+
 public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 {
-    private readonly string _filePath = @"../../Data/chirp_cli_db.csv";
+    private readonly string _filePath = @"../Chirp.Web/Data/chirp_cli_db.csv";
     private static CSVDatabase<T>? _instance;
     private CSVDatabase() { }
     public static CSVDatabase<T> Instance => _instance ??= new CSVDatabase<T>();
