@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="docopt.net" Version="0.8.1" />
+    <PackageReference Include="ThisAssembly.AssemblyInfo" Version="1.0.9" />
   </ItemGroup>
 
   <ItemGroup>
