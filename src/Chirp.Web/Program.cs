@@ -11,9 +11,8 @@ app.MapGet("/cheeps", () =>
     return Results.Ok(cheeps);                 // serialize as JSON
 });
 
-app.MapPost("/cheep", async (HttpRequest req) =>
+app.MapPost("/cheep", (Cheep cheep) =>
 {
-    var cheep = await req.ReadFromJsonAsync<Cheep>();
     CSVDatabase<Cheep>.Instance.Store(cheep!);
     return Results.Ok(cheep);
 });

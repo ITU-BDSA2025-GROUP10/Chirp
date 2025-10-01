@@ -26,6 +26,7 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
         {
             csvWriter.WriteRecord(record);
             csvWriter.NextRecord(); // Sørg for at skrive en ny linje efter hver post
+
         }
 
     }
