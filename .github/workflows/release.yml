@@ -45,7 +45,7 @@ jobs:
         run: dotnet restore
 
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: dotnet test --configuration Release --verbosity normal
 
   prepRelease:
     name: prepare GitHub Release
