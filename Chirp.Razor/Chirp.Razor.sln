@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.Razor", "Chirp.Razor.csproj", "{0C553444-3117-98EA-37EE-55DDD4B2C625}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.Razor", "{0C553444-3117-98EA-37EE-55DDD4B2C625}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
