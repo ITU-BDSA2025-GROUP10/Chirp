@@ -15,4 +15,8 @@
     <PackageReference Include="sqlite" Version="3.13.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Chat.db" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
