@@ -12,11 +12,20 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection")
            ?? "Data Source=Chat.db"; // fallback
 builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn));
 
+
 // Your service (scoped is typical since DbContext is scoped)
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ChatDBContext>();
+    context.Database.EnsureCreated();
+    DbInitializer.SeedDatabase(context);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
