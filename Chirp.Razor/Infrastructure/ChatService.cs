@@ -1,14 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Chirp.Razor.Models;
 
-public record CheepViewModel(string Author, string Message, string Timestamp);
+namespace Chirp.Razor.Infrastructure;
 
-public interface IChatService
-{
-    List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32);
-    List<CheepViewModel> GetCheepsFromAuthor(string author, int page = 0, int pageSize = 32);
-    Task CreateCheepAsync(string authorName, string text);
-}
+
 
 public class ChatService : IChatService
 {
