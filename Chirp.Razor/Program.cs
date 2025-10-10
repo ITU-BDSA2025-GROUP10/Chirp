@@ -1,6 +1,6 @@
 using Chirp.Razor.Models;
 using Microsoft.EntityFrameworkCore;
-using Chirp.Razor.Data;
+using Chirp.Razor.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

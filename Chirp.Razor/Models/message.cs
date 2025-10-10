@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Chirp.Razor.Models;
 
 public class Message
 {
     public int MessageId { get; set; }          // PK
-    public string Text { get; set; } = null!;
+    [StringLength(500)]
+    public required string Text { get; set; } = null!;
     public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
     // FK + navigation to User (author)
