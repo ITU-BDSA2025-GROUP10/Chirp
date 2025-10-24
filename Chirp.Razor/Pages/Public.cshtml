@@ -30,3 +30,17 @@
         <em>There are no cheeps so far.</em>
     }
 </div>
+
+<div class="pagination">
+    @if (Model.HasPreviousPage)
+    {
+        <a href="?pageIndex=@(Model.PageIndex - 1)">Previous</a>
+    }
+
+    <span>Page @Model.PageIndex</span>
+
+    @if (Model.HasNextPage)
+    {
+        <a href="?pageIndex=@(Model.PageIndex + 1)">Next</a>
+    }
+</div>
