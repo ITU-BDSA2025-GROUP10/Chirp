@@ -19,4 +19,8 @@
     <None Include="Chat.db" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\src\Chirp.Infrastructure\Chirp.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

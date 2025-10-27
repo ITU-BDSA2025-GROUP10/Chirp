@@ -1,4 +1,6 @@
-using Chirp.Razor.Models;
+using Chirp.Infrastructure;
+using Chirp.Infrastructure.Repositories;
+using Chirp.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Chirp.Razor.Infrastructure;
 

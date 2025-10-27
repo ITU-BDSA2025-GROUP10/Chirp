@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
-using Chirp.Razor.Models;
+using Chirp.Core.Models;
 
 namespace Chirp.Razor.Pages;
 
