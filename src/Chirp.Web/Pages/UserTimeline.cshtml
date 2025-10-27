@@ -12,7 +12,7 @@
 
     @if (Model.Cheeps.Any())
     {
-        <ul id="messagelist" class="cheeps">
+        <ul id="Cheeplist" class="cheeps">
             @foreach (var cheep in Model.Cheeps)
             {
                 <li>
@@ -20,7 +20,7 @@
                         <strong>
                             <a href="/@cheep.Author">@cheep.Author</a>
                         </strong>
-                        @cheep.Message
+                        @cheep.Cheep
                         <small>&mdash; @cheep.Timestamp</small>
                     </p>
                 </li>

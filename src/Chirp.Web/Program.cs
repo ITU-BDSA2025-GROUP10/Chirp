@@ -1,11 +1,11 @@
 using Chirp.Infrastructure;
 using Chirp.Infrastructure.Repositories;
 using Chirp.Core.Models;
+using Chirp.Infrastructure.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Chirp.Razor.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn))
 
 // Your service (scoped is typical since DbContext is scoped)
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 
 var app = builder.Build();
 

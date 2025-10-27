@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Chirp.Web.Migrations
+namespace Chirp.Infrastructure.Migrations
 {
     [DbContext(typeof(ChatDBContext))]
-    [Migration("20251003071426_InitialDBSchema")]
-    partial class InitialDBSchema
+    [Migration("20251027163340_InitialDBSchema.cs")]
+    partial class InitialDBSchemacs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,14 +20,15 @@ namespace Chirp.Web.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("Chirp.Razor.Models.Message", b =>
+            modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
                 {
-                    b.Property<int>("MessageId")
+                    b.Property<int>("CheepId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Text")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("TimeStamp")
@@ -36,18 +37,21 @@ namespace Chirp.Web.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("MessageId");
+                    b.HasKey("CheepId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Cheeps");
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.User", b =>
+            modelBuilder.Entity("Chirp.Core.Models.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");
@@ -61,10 +65,10 @@ namespace Chirp.Web.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.Message", b =>
+            modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
                 {
-                    b.HasOne("Chirp.Razor.Models.User", "User")
-                        .WithMany("Messages")
+                    b.HasOne("Chirp.Core.Models.User", "User")
+                        .WithMany("Cheeps")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -72,9 +76,9 @@ namespace Chirp.Web.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.User", b =>
+            modelBuilder.Entity("Chirp.Core.Models.User", b =>
                 {
-                    b.Navigation("Messages");
+                    b.Navigation("Cheeps");
                 });
 #pragma warning restore 612, 618
         }

@@ -162,7 +162,7 @@ div.page div.cheepbox input[type="submit"] {
   margin-left: 5px;
 }
 
-div.message {
+div.Cheep {
   list-style: none;
   margin: 10px 10px 0 10px;
 
@@ -175,7 +175,7 @@ div.message {
   font-size: 13px;
 }
 
-ul.message li {
+ul.Cheep li {
   background: #f3b9b9;
   border: 1px solid #ce8181;
   border-radius: 2px;

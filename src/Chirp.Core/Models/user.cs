@@ -9,5 +9,5 @@ public class User
     public string? Email { get; set; }          // optional, you can add later with a migration
 
     // Navigation
-    public ICollection<Message> Messages { get; set; } = new List<Message>();
+    public ICollection<Cheep> Cheeps { get; set; } = new List<Cheep>();
 }

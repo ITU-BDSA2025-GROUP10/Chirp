@@ -2,7 +2,7 @@ namespace Chirp.Core.Models;
 
 // Dummy DTO used for transferring data between layers.
 // Keep it simple for now — you can change it later.
-public class MessageDTO
+public class CheepDTO
 {
     public int Id { get; set; }              // optional placeholder
     public string Author { get; set; } = "";
