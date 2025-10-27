@@ -1,5 +1,5 @@
+using Chirp.Core.Models;
 using Microsoft.EntityFrameworkCore;
-using Chirp.Razor.Models;
 
 public class ChatDBContext : DbContext
 {

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Chirp.Razor.Models;
+using Chirp.Core.Models;
 
 namespace Chirp.Razor.Infrastructure;
 

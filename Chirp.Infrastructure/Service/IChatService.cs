@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Chirp.Razor.Models;
+
 namespace Chirp.Razor.Infrastructure;
 
 public record CheepViewModel(string Author, string Message, string Timestamp);
