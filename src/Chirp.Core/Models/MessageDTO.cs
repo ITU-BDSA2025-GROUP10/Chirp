@@ -1,4 +1,4 @@
-namespace Chirp.Razor.Models;
+namespace Chirp.Core.Models;
 
 // Dummy DTO used for transferring data between layers.
 // Keep it simple for now — you can change it later.

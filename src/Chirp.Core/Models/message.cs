@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Chirp.Razor.Models;
+namespace Chirp.Core.Models;
 
 public class Message
 {
