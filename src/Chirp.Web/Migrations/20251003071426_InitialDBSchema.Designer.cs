@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Chirp.Razor.Migrations
+namespace Chirp.Web.Migrations
 {
     [DbContext(typeof(ChatDBContext))]
     [Migration("20251003071426_InitialDBSchema")]

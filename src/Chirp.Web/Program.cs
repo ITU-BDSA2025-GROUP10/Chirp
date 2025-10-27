@@ -2,6 +2,9 @@ using Chirp.Infrastructure;
 using Chirp.Infrastructure.Repositories;
 using Chirp.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Chirp.Razor.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
