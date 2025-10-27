@@ -3,24 +3,21 @@ using System;
 using Chirp.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Chirp.Razor.Migrations
+namespace Chirp.Infrastructure.Migrations
 {
     [DbContext(typeof(ChatDBContext))]
-    [Migration("20251003074718_AddUserDisplayName")]
-    partial class AddUserDisplayName
+    partial class ChatDBContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("Chirp.Razor.Models.Cheep", b =>
+            modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
                 {
                     b.Property<int>("CheepId")
                         .ValueGeneratedOnAdd()
@@ -28,6 +25,7 @@ namespace Chirp.Razor.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("TimeStamp")
@@ -43,7 +41,7 @@ namespace Chirp.Razor.Migrations
                     b.ToTable("Cheeps");
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.User", b =>
+            modelBuilder.Entity("Chirp.Core.Models.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -64,9 +62,9 @@ namespace Chirp.Razor.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.Cheep", b =>
+            modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
                 {
-                    b.HasOne("Chirp.Razor.Models.User", "User")
+                    b.HasOne("Chirp.Core.Models.User", "User")
                         .WithMany("Cheeps")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -75,7 +73,7 @@ namespace Chirp.Razor.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.User", b =>
+            modelBuilder.Entity("Chirp.Core.Models.User", b =>
                 {
                     b.Navigation("Cheeps");
                 });
