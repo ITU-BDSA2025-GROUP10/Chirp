@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Chirp.Core.Models;
 
-public class Message
+public class Cheep
 {
-    public int MessageId { get; set; }          // PK
+    public int CheepId { get; set; }          // PK
     [StringLength(500)]
     public required string Text { get; set; } = null!;
     public DateTime TimeStamp { get; set; } = DateTime.UtcNow;

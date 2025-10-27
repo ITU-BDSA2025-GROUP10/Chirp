@@ -3,19 +3,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chirp.Infrastructure.Repositories;
 
-public class MessageRepository : IMessageRepository
+public class CheepRepository : ICheepRepository
 {
     private readonly ChatDBContext _db;
 
-    public MessageRepository(ChatDBContext db)
+    public CheepRepository(ChatDBContext db)
     {
         _db = db;
     }
 
     // READ (optionally filter by author) + paging
-    public async Task<List<MessageDTO>> ReadMessagesAsync(string? author = null, int page = 0, int pageSize = 32)
+    public async Task<List<CheepDTO>> ReadCheepsAsync(string? author = null, int page = 0, int pageSize = 32)
     {
-        var q = _db.Messages
+        var q = _db.Cheeps
                    .AsNoTracking()
                    .Include(m => m.User)
                    .OrderByDescending(m => m.TimeStamp)
@@ -26,9 +26,9 @@ public class MessageRepository : IMessageRepository
 
         var items = await q.Skip(page * pageSize)
                            .Take(pageSize)
-                           .Select(m => new MessageDTO
+                           .Select(m => new CheepDTO
                            {
-                               Id = m.MessageId,
+                               Id = m.CheepId,
                                Author = m.User.Name,
                                Text = m.Text,
                                Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss")
@@ -38,8 +38,8 @@ public class MessageRepository : IMessageRepository
         return items;
     }
 
-    // CREATE (find-or-create User, insert Message)
-    public async Task<int> CreateMessageAsync(MessageDTO dto)
+    // CREATE (find-or-create User, insert Cheep)
+    public async Task<int> CreateCheepAsync(CheepDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Author))
             throw new ArgumentException("Author is required.", nameof(dto.Author));
@@ -55,23 +55,23 @@ public class MessageRepository : IMessageRepository
             await _db.SaveChangesAsync();
         }
 
-        var msg = new Message
+        var msg = new Cheep
         {
             Text = dto.Text,
             TimeStamp = DateTime.UtcNow,
             UserId = user.UserId
         };
 
-        _db.Messages.Add(msg);
+        _db.Cheeps.Add(msg);
         await _db.SaveChangesAsync();
 
-        return msg.MessageId;
+        return msg.CheepId;
     }
 
-    // UPDATE (update message text; keep it simple for now)
-    public async Task UpdateMessageAsync(MessageDTO dto)
+    // UPDATE (update Cheep text; keep it simple for now)
+    public async Task UpdateCheepAsync(CheepDTO dto)
     {
-        var msg = await _db.Messages.FirstOrDefaultAsync(m => m.MessageId == dto.Id);
+        var msg = await _db.Cheeps.FirstOrDefaultAsync(m => m.CheepId == dto.Id);
         if (msg is null) return; // or throw KeyNotFoundException
 
         // For the slides, just update text. (You can extend later.)
@@ -82,12 +82,12 @@ public class MessageRepository : IMessageRepository
     }
 
     // DELETE
-    public async Task DeleteMessageAsync(int id)
+    public async Task DeleteCheepAsync(int id)
     {
-        var msg = await _db.Messages.FirstOrDefaultAsync(m => m.MessageId == id);
+        var msg = await _db.Cheeps.FirstOrDefaultAsync(m => m.CheepId == id);
         if (msg is null) return; // or throw KeyNotFoundException
 
-        _db.Messages.Remove(msg);
+        _db.Cheeps.Remove(msg);
         await _db.SaveChangesAsync();
     }
 }

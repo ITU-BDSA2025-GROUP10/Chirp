@@ -20,9 +20,9 @@ namespace Chirp.Razor.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("Chirp.Razor.Models.Message", b =>
+            modelBuilder.Entity("Chirp.Razor.Models.Cheep", b =>
                 {
-                    b.Property<int>("MessageId")
+                    b.Property<int>("CheepId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -37,11 +37,11 @@ namespace Chirp.Razor.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("MessageId");
+                    b.HasKey("CheepId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Cheeps");
                 });
 
             modelBuilder.Entity("Chirp.Razor.Models.User", b =>
@@ -65,10 +65,10 @@ namespace Chirp.Razor.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.Message", b =>
+            modelBuilder.Entity("Chirp.Razor.Models.Cheep", b =>
                 {
                     b.HasOne("Chirp.Razor.Models.User", "User")
-                        .WithMany("Messages")
+                        .WithMany("Cheeps")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -78,7 +78,7 @@ namespace Chirp.Razor.Migrations
 
             modelBuilder.Entity("Chirp.Razor.Models.User", b =>
                 {
-                    b.Navigation("Messages");
+                    b.Navigation("Cheeps");
                 });
 #pragma warning restore 612, 618
         }

@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn))
 
 // Your service (scoped is typical since DbContext is scoped)
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 
 var app = builder.Build();
 

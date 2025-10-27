@@ -26,10 +26,10 @@ namespace Chirp.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Messages",
+                name: "Cheeps",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(type: "INTEGER", nullable: false)
+                    CheepId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Text = table.Column<string>(type: "TEXT", nullable: false),
                     TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -37,9 +37,9 @@ namespace Chirp.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Messages", x => x.MessageId);
+                    table.PrimaryKey("PK_Cheeps", x => x.CheepId);
                     table.ForeignKey(
-                        name: "FK_Messages_Users_UserId",
+                        name: "FK_Cheeps_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -47,8 +47,8 @@ namespace Chirp.Web.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_UserId",
-                table: "Messages",
+                name: "IX_Cheeps_UserId",
+                table: "Cheeps",
                 column: "UserId");
         }
 
@@ -56,7 +56,7 @@ namespace Chirp.Web.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Messages");
+                name: "Cheeps");
 
             migrationBuilder.DropTable(
                 name: "Users");

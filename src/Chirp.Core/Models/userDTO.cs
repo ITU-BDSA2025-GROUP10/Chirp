@@ -7,5 +7,5 @@ public class UserDto
     public string? DisplayName { get; set; }
     public string? Email { get; set; }
 
-    public ICollection<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
+    public ICollection<CheepDTO> Cheeps { get; set; } = new List<CheepDTO>();
 }

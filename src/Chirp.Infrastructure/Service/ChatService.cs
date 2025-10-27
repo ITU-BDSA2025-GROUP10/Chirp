@@ -13,7 +13,7 @@ public class ChatService : IChatService
     public ChatService(ChatDBContext db) => _db = db;
 
     public List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32)
-        => _db.Messages
+        => _db.Cheeps
               .AsNoTracking()
               .Include(m => m.User)
               .OrderByDescending(m => m.TimeStamp)
@@ -26,7 +26,7 @@ public class ChatService : IChatService
               .ToList();
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author, int page = 0, int pageSize = 32)
-        => _db.Messages
+        => _db.Cheeps
               .AsNoTracking()
               .Include(m => m.User)
               .Where(m => m.User.Name == author)
@@ -50,7 +50,7 @@ public class ChatService : IChatService
             await _db.SaveChangesAsync();
         }
 
-        _db.Messages.Add(new Message
+        _db.Cheeps.Add(new Cheep
         {
             Text = text,
             TimeStamp = DateTime.UtcNow,
