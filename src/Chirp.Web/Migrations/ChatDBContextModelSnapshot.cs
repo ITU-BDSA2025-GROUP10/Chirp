@@ -17,7 +17,7 @@ namespace Chirp.Razor.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("Chirp.Razor.Models.Cheep", b =>
+            modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
                 {
                     b.Property<int>("CheepId")
                         .ValueGeneratedOnAdd()

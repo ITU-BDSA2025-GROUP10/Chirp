@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
+namespace Chirp.Infrastructure.Service;
 
-namespace Chirp.Razor.Infrastructure;
-
-public record CheepViewModel(string Author, string Message, string Timestamp);
+public record CheepViewModel(string Author, string Cheep, string Timestamp);
 public interface IChatService
 {
 

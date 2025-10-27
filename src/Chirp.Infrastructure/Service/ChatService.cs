@@ -1,8 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Chirp.Core.Models;
-using Chirp.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
-namespace Chirp.Razor.Infrastructure;
+namespace Chirp.Infrastructure.Service;
 
 
 

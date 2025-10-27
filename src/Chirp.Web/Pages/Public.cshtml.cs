@@ -1,4 +1,4 @@
-﻿using Chirp.Razor.Infrastructure;
+﻿using Chirp.Infrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
