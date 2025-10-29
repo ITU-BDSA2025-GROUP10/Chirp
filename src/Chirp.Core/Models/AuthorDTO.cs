@@ -1,8 +1,8 @@
 namespace Chirp.Core.Models;
 
-public class UserDto
+public class AuthorDto
 {
-    public int UserId { get; set; }
+    public int AuthorId { get; set; }
     public string Name { get; set; } = null!;
     public string? DisplayName { get; set; }
     public string? Email { get; set; }

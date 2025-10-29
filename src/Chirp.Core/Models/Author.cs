@@ -1,8 +1,8 @@
 namespace Chirp.Core.Models;
 
-public class User
+public class Author
 {
-    public int UserId { get; set; }            // PK (EF recognizes *Id)
+    public int AuthorId { get; set; }            // PK (EF recognizes *Id)
     public string Name { get; set; } = null!;
 
     public string? DisplayName { get; set; }   // NEW for Step 6

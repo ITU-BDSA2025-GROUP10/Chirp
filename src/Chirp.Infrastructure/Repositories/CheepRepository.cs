@@ -17,19 +17,19 @@ public class CheepRepository : ICheepRepository
     {
         var q = _db.Cheeps
                    .AsNoTracking()
-                   .Include(m => m.User)
+                   .Include(m => m.Author)
                    .OrderByDescending(m => m.TimeStamp)
                    .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(author))
-            q = q.Where(m => m.User.Name == author);
+            q = q.Where(m => m.Author.Name == author);
 
         var items = await q.Skip(page * pageSize)
                            .Take(pageSize)
                            .Select(m => new CheepDTO
                            {
                                Id = m.CheepId,
-                               Author = m.User.Name,
+                               Author = m.Author.Name,
                                Text = m.Text,
                                Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss")
                            })
@@ -38,7 +38,7 @@ public class CheepRepository : ICheepRepository
         return items;
     }
 
-    // CREATE (find-or-create User, insert Cheep)
+    // CREATE (find-or-create Author, insert Cheep)
     public async Task<int> CreateCheepAsync(CheepDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Author))
@@ -47,11 +47,11 @@ public class CheepRepository : ICheepRepository
             throw new ArgumentException("Text is required.", nameof(dto.Text));
 
         // find or create the author
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Name == dto.Author);
-        if (user is null)
+        var author = await _db.Authors.FirstOrDefaultAsync(u => u.Name == dto.Author);
+        if (author is null)
         {
-            user = new User { Name = dto.Author };
-            _db.Users.Add(user);
+            author = new Author { Name = dto.Author };
+            _db.Authors.Add(author);
             await _db.SaveChangesAsync();
         }
 
@@ -59,7 +59,7 @@ public class CheepRepository : ICheepRepository
         {
             Text = dto.Text,
             TimeStamp = DateTime.UtcNow,
-            UserId = user.UserId
+            AuthorId = author.AuthorId
         };
 
         _db.Cheeps.Add(msg);
