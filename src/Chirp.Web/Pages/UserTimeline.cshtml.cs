@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Chirp.Web.Pages;
 
-public class UserTimelineModel : PageModel
+public class AuthorTimelineModel : PageModel
 {
     private readonly IChatService _service;
     public List<CheepViewModel> Cheeps { get; set; }
 
-    public UserTimelineModel(IChatService service)
+    public AuthorTimelineModel(IChatService service)
     {
         _service = service;
     }

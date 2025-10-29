@@ -31,19 +31,19 @@ namespace Chirp.Infrastructure.Migrations
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("CheepId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Cheeps");
                 });
 
-            modelBuilder.Entity("Chirp.Core.Models.User", b =>
+            modelBuilder.Entity("Chirp.Core.Models.Author", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("AuthorId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -57,23 +57,23 @@ namespace Chirp.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("UserId");
+                    b.HasKey("AuthorId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
                 {
-                    b.HasOne("Chirp.Core.Models.User", "User")
+                    b.HasOne("Chirp.Core.Models.Author", "Author")
                         .WithMany("Cheeps")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Chirp.Core.Models.User", b =>
+            modelBuilder.Entity("Chirp.Core.Models.Author", b =>
                 {
                     b.Navigation("Cheeps");
                 });

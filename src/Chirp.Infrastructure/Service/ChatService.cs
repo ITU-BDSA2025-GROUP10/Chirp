@@ -14,12 +14,12 @@ public class ChatService : IChatService
     public List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32)
         => _db.Cheeps
               .AsNoTracking()
-              .Include(m => m.User)
+              .Include(m => m.Author)
               .OrderByDescending(m => m.TimeStamp)
               .Skip(page * pageSize)
               .Take(pageSize)
               .Select(m => new CheepViewModel(
-                    m.User.Name,
+                    m.Author.Name,
                     m.Text,
                     m.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
               .ToList();
@@ -27,13 +27,13 @@ public class ChatService : IChatService
     public List<CheepViewModel> GetCheepsFromAuthor(string author, int page = 0, int pageSize = 32)
         => _db.Cheeps
               .AsNoTracking()
-              .Include(m => m.User)
-              .Where(m => m.User.Name == author)
+              .Include(m => m.Author)
+              .Where(m => m.Author.Name == author)
               .OrderByDescending(m => m.TimeStamp)
               .Skip(page * pageSize)
               .Take(pageSize)
               .Select(m => new CheepViewModel(
-                    m.User.Name,
+                    m.Author.Name,
                     m.Text,
                     m.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
               .ToList();
@@ -41,11 +41,11 @@ public class ChatService : IChatService
     public async Task CreateCheepAsync(string authorName, string text)
     {
         // find or create author
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Name == authorName);
-        if (user is null)
+        var author = await _db.Authors.FirstOrDefaultAsync(u => u.Name == authorName);
+        if (author is null)
         {
-            user = new User { Name = authorName };
-            _db.Users.Add(user);
+            author = new Author { Name = authorName };
+            _db.Authors.Add(author);
             await _db.SaveChangesAsync();
         }
 
@@ -53,7 +53,7 @@ public class ChatService : IChatService
         {
             Text = text,
             TimeStamp = DateTime.UtcNow,
-            UserId = user.UserId
+            AuthorId = author.AuthorId
         });
 
         await _db.SaveChangesAsync();

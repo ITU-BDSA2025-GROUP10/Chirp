@@ -9,7 +9,7 @@
     <ItemGroup>
       <AdditionalFiles Include="Pages\Public.cshtml" />
       <AdditionalFiles Include="Pages\Shared\_Layout.cshtml" />
-      <AdditionalFiles Include="Pages\UserTimeline.cshtml" />
+      <AdditionalFiles Include="Pages\AuthorTimeline.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
