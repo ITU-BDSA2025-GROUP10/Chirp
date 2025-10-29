@@ -7,7 +7,7 @@ namespace Chirp.Web.Pages;
 
 public class PublicModel : PageModel
 {
-    private readonly IChatService _service;
+    private readonly ICheepService _service;
     private readonly IConfiguration _configuration;
     public List<CheepViewModel> Cheeps { get; set; }
 
@@ -16,7 +16,7 @@ public class PublicModel : PageModel
     public bool HasPreviousPage { get; private set; }
     public bool HasNextPage { get; private set; }
 
-    public PublicModel(IChatService service, IConfiguration configuration)
+    public PublicModel(ICheepService service, IConfiguration configuration)
     {
         _service = service;
         _configuration = configuration;
