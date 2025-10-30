@@ -5,11 +5,11 @@ namespace Chirp.Infrastructure.Service;
 
 
 
-public class ChatService : IChatService
+public class CheepService : ICheepService
 {
     private readonly ChatDBContext _db;
 
-    public ChatService(ChatDBContext db) => _db = db;
+    public CheepService(ChatDBContext db) => _db = db;
 
     public List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32)
         => _db.Cheeps

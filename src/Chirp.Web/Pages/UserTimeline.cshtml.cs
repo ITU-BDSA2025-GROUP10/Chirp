@@ -7,10 +7,10 @@ namespace Chirp.Web.Pages;
 
 public class AuthorTimelineModel : PageModel
 {
-    private readonly IChatService _service;
+    private readonly ICheepService _service;
     public List<CheepViewModel> Cheeps { get; set; }
 
-    public AuthorTimelineModel(IChatService service)
+    public AuthorTimelineModel(ICheepService service)
     {
         _service = service;
     }
