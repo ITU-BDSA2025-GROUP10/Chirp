@@ -99,8 +99,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
 
         // (Optional) Check timestamp format "MM/dd/yy H:mm:ss"
         var rx = new Regex(@"^\d{2}/\d{2}/\d{2} \d{1,2}:\d{2}:\d{2}$");
-        result.Should().OnlyContain(c => rx.IsMatch(c.Timestamp));
-    }
+        result.Should().OnlyContain(c => !string.IsNullOrEmpty(c.Timestamp) && rx.IsMatch(c.Timestamp!));    }
 
     [Fact]
     public async Task ReadCheepsAsync_AppliesPaging()
