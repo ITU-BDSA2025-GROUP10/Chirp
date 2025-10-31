@@ -6,7 +6,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-using Chirp.Core.Models;                   // Cheep, User, CheepDTO
+using Chirp.Core.Models;                   // Cheep, author, CheepDTO
 using Chirp.Infrastructure;                 // ChatDBContext
 using Chirp.Infrastructure.Repositories;    // CheepRepository
 
@@ -44,12 +44,12 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
 
         await using var verify = _fx.CreateContext();
         var saved = await verify.Cheeps
-            .Include(c => c.User)
+            .Include(c => c.Author)
             .FirstOrDefaultAsync(c => c.CheepId == id);
 
         saved.Should().NotBeNull();
         saved!.Text.Should().Be("hello world");
-        saved.User.Name.Should().Be("alice");
+        saved.Author.Name.Should().Be("alice");
     }
 
     [Theory]
@@ -75,15 +75,15 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
         // seed
         await using (var seed = _fx.CreateContext())
         {
-            var alice = new User { Name = "alice" };
-            var bob   = new User { Name = "bob" };
-            seed.Users.AddRange(alice, bob);
+            var alice = new Author { Name = "alice" };
+            var bob   = new Author { Name = "bob" };
+            seed.Authors.AddRange(alice, bob);
             await seed.SaveChangesAsync();
 
             seed.Cheeps.AddRange(
-                new Cheep { Text = "old",   TimeStamp = DateTime.UtcNow.AddMinutes(-3), UserId = alice.UserId },
-                new Cheep { Text = "other", TimeStamp = DateTime.UtcNow.AddMinutes(-2), UserId = bob.UserId   },
-                new Cheep { Text = "new",   TimeStamp = DateTime.UtcNow.AddMinutes(-1), UserId = alice.UserId }
+                new Cheep { Text = "old",   TimeStamp = DateTime.UtcNow.AddMinutes(-3), AuthorId = alice.AuthorId },
+                new Cheep { Text = "other", TimeStamp = DateTime.UtcNow.AddMinutes(-2), AuthorId = bob.AuthorId   },
+                new Cheep { Text = "new",   TimeStamp = DateTime.UtcNow.AddMinutes(-1), AuthorId = alice.AuthorId }
             );
             await seed.SaveChangesAsync();
         }
@@ -107,8 +107,8 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
         // seed 5 cheeps for alice with increasing timestamps
         await using (var seed = _fx.CreateContext())
         {
-            var alice = new User { Name = "alice" };
-            seed.Users.Add(alice);
+            var alice = new Author { Name = "alice" };
+            seed.Authors.Add(alice);
             await seed.SaveChangesAsync();
 
             for (int i = 0; i < 5; i++)
@@ -116,7 +116,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
                 seed.Cheeps.Add(new Cheep {
                     Text = $"c{i}",
                     TimeStamp = DateTime.UtcNow.AddMinutes(-i),
-                    UserId = alice.UserId
+                    AuthorId = alice.AuthorId
                 });
             }
             await seed.SaveChangesAsync();
@@ -147,11 +147,11 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
         int id;
         await using (var seed = _fx.CreateContext())
         {
-            var u = new User { Name = "alice" };
-            seed.Users.Add(u);
+            var u = new Author { Name = "alice" };
+            seed.Authors.Add(u);
             await seed.SaveChangesAsync();
 
-            var c = new Cheep { Text = "before", TimeStamp = DateTime.UtcNow.AddMinutes(-5), UserId = u.UserId };
+            var c = new Cheep { Text = "before", TimeStamp = DateTime.UtcNow.AddMinutes(-5), AuthorId = u.AuthorId };
             seed.Cheeps.Add(c);
             await seed.SaveChangesAsync();
             id = c.CheepId;
@@ -175,11 +175,11 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
         int id;
         await using (var seed = _fx.CreateContext())
         {
-            var u = new User { Name = "alice" };
-            seed.Users.Add(u);
+            var u = new Author { Name = "alice" };
+            seed.Authors.Add(u);
             await seed.SaveChangesAsync();
 
-            var c = new Cheep { Text = "to delete", TimeStamp = DateTime.UtcNow, UserId = u.UserId };
+            var c = new Cheep { Text = "to delete", TimeStamp = DateTime.UtcNow, AuthorId = u.AuthorId };
             seed.Cheeps.Add(c);
             await seed.SaveChangesAsync();
             id = c.CheepId;
