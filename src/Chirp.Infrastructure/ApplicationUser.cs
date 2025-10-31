@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace Chirp.Infrastructure;
 
-public class ApplicationUser
+public class ApplicationUser : IdentityUser
 {
     
 }
