@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chirp.Infrastructure;
 
-public class ChatDBContext : IdentityDbContext<ApplicationUser>
+public class ChatDBContext : IdentityDbContext<ApplicationAuthor>
 {
     public DbSet<Cheep> Cheeps { get; set; }
     public DbSet<Author> Authors { get; set; }

@@ -18,7 +18,7 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection")
            ?? "Data Source=Chat.db"; // fallback
 builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn));
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn.RequireConfirmedAccount = true)
 .AddEntityFrameworkStores<ChatDBContext>();
 
 // Your service (scoped is typical since DbContext is scoped)
