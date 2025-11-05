@@ -3,11 +3,23 @@
 @{
     ViewData["Title"] = "Chirp!";
     Layout = "Shared/_Layout";
+    var routeName = HttpContext.GetRouteValue("author");
 }
 
 
 <div>
     <h2> Public Timeline </h2>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="cheepbox">
+            <h3>What's on your mind @routeName</h3>
+            <form method="post">
+                <input style="float: left" type="text" asp-for="Text">
+                <input type="submit" value="Share">
+            </form>
+        </div>
+    }
+    
     @if (Model.Cheeps.Any())
     {
         <ul id="Cheeplist" class="cheeps">
