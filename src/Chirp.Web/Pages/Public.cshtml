@@ -15,6 +15,7 @@
             <h3>What's on your mind @routeName</h3>
             <form method="post">
                 <input style="float: left" type="text" asp-for="Text">
+                <span asp-validation-for="Text" class="text-danger"></span>
                 <input type="submit" value="Share">
             </form>
         </div>

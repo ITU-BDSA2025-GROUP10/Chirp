@@ -1,4 +1,5 @@
-﻿using Chirp.Infrastructure.Service;
+﻿using System.ComponentModel.DataAnnotations;
+using Chirp.Infrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
@@ -15,29 +16,22 @@ public class PublicModel : PageModel
     public int PageSize { get; private set; }
     public bool HasPreviousPage { get; private set; }
     public bool HasNextPage { get; private set; }
-    [BindProperty] public string Text {get ; set;} = string.Empty;
+    [BindProperty] [Required] [StringLength(160)] public string Text {get ; set;} = string.Empty;
 
 
     public async Task<IActionResult> OnPost()
     {
-        Console.WriteLine($"POST received! Text = '{Text}'");
-        // Check if user is logged in
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        
         if (!User.Identity?.IsAuthenticated ?? true)
-            
         {
-            Console.WriteLine("User not authenticated");
-
+           // Console.WriteLine("User not authenticated");
             return RedirectToPage();
         }
-
-        // Check if text is not empty
-        if (string.IsNullOrWhiteSpace(Text))
-        {
-            Console.WriteLine("Text is empty");
-
-            return RedirectToPage();
-        }
-
+        
         // Create the cheep
         await _service.CreateCheepAsync(User.Identity.Name!, Text);
 
