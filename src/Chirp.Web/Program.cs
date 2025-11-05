@@ -4,6 +4,7 @@ using Chirp.Core.Models;
 using Chirp.Infrastructure.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -17,6 +18,8 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection")
            ?? "Data Source=Chat.db"; // fallback
 builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn));
 
+builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn.RequireConfirmedAccount = true)
+.AddEntityFrameworkStores<ChatDBContext>();
 
 // Your service (scoped is typical since DbContext is scoped)
 builder.Services.AddScoped<ICheepService, CheepService>();
@@ -45,6 +48,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 
