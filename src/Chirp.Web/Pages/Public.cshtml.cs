@@ -15,12 +15,45 @@ public class PublicModel : PageModel
     public int PageSize { get; private set; }
     public bool HasPreviousPage { get; private set; }
     public bool HasNextPage { get; private set; }
+    [BindProperty] public string Text {get ; set;} = string.Empty;
 
+
+    public async Task<IActionResult> OnPost()
+    {
+        Console.WriteLine($"POST received! Text = '{Text}'");
+        // Check if user is logged in
+        if (!User.Identity?.IsAuthenticated ?? true)
+            
+        {
+            Console.WriteLine("User not authenticated");
+
+            return RedirectToPage();
+        }
+
+        // Check if text is not empty
+        if (string.IsNullOrWhiteSpace(Text))
+        {
+            Console.WriteLine("Text is empty");
+
+            return RedirectToPage();
+        }
+
+        // Create the cheep
+        await _service.CreateCheepAsync(User.Identity.Name!, Text);
+
+        // Redirect back to the page (so the new cheep shows up)
+        return RedirectToPage();
+    }
+
+    
     public PublicModel(ICheepService service, IConfiguration configuration)
     {
         _service = service;
         _configuration = configuration;
     }
+
+
+       
 
 
     public ActionResult OnGet(int? pageIndex)
