@@ -20,5 +20,9 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>
  

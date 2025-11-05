@@ -12,5 +12,6 @@ public class ChatDBContext : IdentityDbContext<ApplicationAuthor>
     public ChatDBContext(DbContextOptions<ChatDBContext> options)
         : base(options)
     {
+        
     }
 }
