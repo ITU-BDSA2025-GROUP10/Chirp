@@ -41,9 +41,5 @@
     <ItemGroup>
       <ProjectReference Include="..\Chirp.Infrastructure\Chirp.Infrastructure.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <None Remove="Chat.db" />
-    </ItemGroup>
 
 </Project>
