@@ -22,8 +22,9 @@ builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn
 .AddEntityFrameworkStores<ChatDBContext>();
 
 // Your service (scoped is typical since DbContext is scoped)
-builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<ICheepService, CheepService>();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
 var app = builder.Build();
 

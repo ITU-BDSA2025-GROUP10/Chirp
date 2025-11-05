@@ -1,5 +1,6 @@
 using Chirp.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace Chirp.Infrastructure.Repositories;
 
@@ -31,8 +32,7 @@ public class CheepRepository : ICheepRepository
                                Id = m.CheepId,
                                Author = m.Author.Name,
                                Text = m.Text,
-                               Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss")
-                           })
+                               Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss", CultureInfo.InvariantCulture)})
                            .ToListAsync();
 
         return items;

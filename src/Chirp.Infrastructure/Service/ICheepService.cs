@@ -1,7 +1,7 @@
 namespace Chirp.Infrastructure.Service;
 
 public record CheepViewModel(string Author, string Cheep, string Timestamp);
-public interface IChatService
+public interface ICheepService
 {
 
     List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32);
