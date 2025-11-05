@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chirp.Infrastructure.Migrations
 {
     [DbContext(typeof(ChatDBContext))]
-    [Migration("20251030115127_AddIdentitySchema")]
-    partial class AddIdentitySchema
+    [Migration("20251105151353_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,7 +94,7 @@ namespace Chirp.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("NormalizedAuthorName")
+                    b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
@@ -113,7 +113,7 @@ namespace Chirp.Infrastructure.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AuthorName")
+                    b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
@@ -122,11 +122,11 @@ namespace Chirp.Infrastructure.Migrations
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("NormalizedAuthorName")
+                    b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("AuthorNameIndex");
+                        .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetAuthors", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -178,7 +178,7 @@ namespace Chirp.Infrastructure.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,18 +190,18 @@ namespace Chirp.Infrastructure.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AuthorId")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("AspNetAuthorClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
@@ -214,35 +214,35 @@ namespace Chirp.Infrastructure.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AuthorId")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("AspNetAuthorLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("AuthorId")
+                    b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("AuthorId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetAuthorRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("AuthorId")
+                    b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LoginProvider")
@@ -256,9 +256,9 @@ namespace Chirp.Infrastructure.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("AuthorId", "LoginProvider", "Name");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetAuthorTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
@@ -281,25 +281,25 @@ namespace Chirp.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.HasOne("Chirp.Infrastructure.ApplicationAuthor", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("Chirp.Infrastructure.ApplicationAuthor", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
@@ -309,16 +309,16 @@ namespace Chirp.Infrastructure.Migrations
 
                     b.HasOne("Chirp.Infrastructure.ApplicationAuthor", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityAuthorToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("Chirp.Infrastructure.ApplicationAuthor", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
