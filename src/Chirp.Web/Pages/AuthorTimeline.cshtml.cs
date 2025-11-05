@@ -1,4 +1,5 @@
-﻿using Chirp.Infrastructure;
+﻿using System.ComponentModel.DataAnnotations;
+using Chirp.Infrastructure;
 using Chirp.Infrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,22 +12,22 @@ public class AuthorTimelineModel : PageModel
     public List<CheepViewModel> Cheeps { get; set; }
     
     
-    [BindProperty] public string Text {get ; set;} = string.Empty;
+    [BindProperty] [Required] [StringLength(160)] public string Text {get ; set;} = string.Empty;
 
 
     public async Task<IActionResult> OnPost()
     {
-        // Check if user is logged in
+            
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        
         if (!User.Identity?.IsAuthenticated ?? true)
         {
             return RedirectToPage();
         }
-
-        // Check if text is not empty
-        if (string.IsNullOrWhiteSpace(Text))
-        {
-            return RedirectToPage();
-        }
+        
 
         // Create the cheep
         await _service.CreateCheepAsync(User.Identity.Name!, Text);
