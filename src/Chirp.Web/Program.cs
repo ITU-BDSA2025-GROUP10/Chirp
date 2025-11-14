@@ -21,6 +21,15 @@ builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn))
 builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn.RequireConfirmedAccount = true)
 .AddEntityFrameworkStores<ChatDBContext>();
 
+//github login
+builder.Services.AddAuthentication()
+    .AddGitHub(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+        options.CallbackPath = "/signin-github"; // optional, this is the default
+    });
+
 // Your service (scoped is typical since DbContext is scoped)
 builder.Services.AddScoped<ICheepService, CheepService>();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
