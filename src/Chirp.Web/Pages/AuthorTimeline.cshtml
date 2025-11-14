@@ -15,10 +15,23 @@
         <div class="cheepbox">
             <h3>What's on your mind @routeName</h3>
             <form method="post">
-                <input style="float: left" type="text" asp-for="Text">
+                <input style="float: left" type="text" asp-for="Text" maxlength="160" id="cheepText">
+                <span asp-validation-for="Text" class="text-danger"></span>
                 <input type="submit" value="Share">
+                <div style="text-align: right; margin-top: 5px; clear: both;">
+                    <small><span id="charCount">160</span> characters remaining</small>
+                </div>
             </form>
         </div>
+        <script>
+            const textInput = document.getElementById('cheepText');
+            const charCount = document.getElementById('charCount');
+
+            textInput.addEventListener('input', function() {
+                const remaining = 160 - this.value.length;
+                charCount.textContent = remaining;
+            });
+        </script>
     }
 
     @if (Model.Cheeps.Any())
