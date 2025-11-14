@@ -2,7 +2,6 @@
 using Chirp.Infrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
 
 namespace Chirp.Web.Pages;
 
