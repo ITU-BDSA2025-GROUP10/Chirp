@@ -74,6 +74,7 @@ div.page div.navigation {
 div.page div.navigation a {
   color: #444;
   font-weight: bold;
+    display: block;
 }
 
 div.page h2 {
