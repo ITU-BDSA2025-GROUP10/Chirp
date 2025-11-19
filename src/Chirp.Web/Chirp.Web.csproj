@@ -4,7 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
+      <UserSecretsId>8c53d171-caa6-4d19-9dc1-1819a9f10094</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
       <AdditionalFiles Include="Pages\Public.cshtml" />
@@ -26,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="8.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.21" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
