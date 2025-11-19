@@ -4,7 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
+      <UserSecretsId>8c53d171-caa6-4d19-9dc1-1819a9f10094</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
       <AdditionalFiles Include="Pages\Public.cshtml" />
