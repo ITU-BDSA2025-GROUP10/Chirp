@@ -25,7 +25,7 @@ builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn
 builder.Services.AddAuthentication()
     .AddGitHub(options =>
     {
-        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+        options.ClientId = builder.Configuration["Authentication:GitHub:ClientID"];
         options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
         options.CallbackPath = "/signin-github"; // optional, this is the default
     });
