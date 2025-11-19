@@ -481,4 +481,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # Vim temporary swap files
-*.swp
+*.swp/src/Chirp.Web/Chat.db
