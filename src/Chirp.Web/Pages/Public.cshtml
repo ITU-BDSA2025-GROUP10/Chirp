@@ -43,7 +43,15 @@
                         <strong>
                             <a href="/@cheep.Author">@cheep.Author</a>
                         </strong>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <button class="nav-link btn btn-link p-0" type="submit">
+                                follow
+                            </button>
+                        }
+                        <br>
                         @cheep.Cheep
+                        <br>
                         <small>&mdash; @cheep.Timestamp</small>
                     </p>
                 </li>
