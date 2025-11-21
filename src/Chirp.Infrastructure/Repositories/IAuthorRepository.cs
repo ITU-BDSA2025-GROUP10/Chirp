@@ -12,8 +12,6 @@ public interface IAuthorRepository
     Task<int> createAuthorAsync(string name, string email);
     // Delete a author from the database.
     Task deleteAuthorAsync(int id);
-    // Get list of whom the user is following
-    Task<List<Author>> GetFollowingAsync();
-    // Get list of who is following the user
-    Task<List<Author>> GetFollowersAsync();
+    
+    Task CreateFollowingAsync(int followerId, int followedId);
 }

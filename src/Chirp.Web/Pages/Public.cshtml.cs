@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Chirp.Infrastructure.Service;
+using Chirp.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -9,6 +10,7 @@ public class PublicModel : PageModel
 {
     private readonly ICheepService _service;
     private readonly IConfiguration _configuration;
+    private readonly IAuthorRepository _authorRepository;
     public List<CheepViewModel> Cheeps { get; set; }
 
     public int PageIndex { get; private set; }
@@ -36,19 +38,45 @@ public class PublicModel : PageModel
 
         // Redirect back to the page (so the new cheep shows up)
         return RedirectToPage();
+        
+        
+        
     }
-
     
-    public PublicModel(ICheepService service, IConfiguration configuration)
+    public PublicModel(ICheepService service, IConfiguration configuration, IAuthorRepository authorRepository)
     {
         _service = service;
         _configuration = configuration;
+        _authorRepository = authorRepository;
+    }
+    
+    public async Task<IActionResult> OnPostFollowAsync(string author, int? pageIndex)
+    {
+        if (!User.Identity?.IsAuthenticated ?? true)
+            return RedirectToPage();
+
+        var email = User.Identity!.Name!;
+        int followerId;
+        try
+        {
+            followerId = await _authorRepository.getAuthorByEmailAsync(email);
+        }
+        catch (KeyNotFoundException)
+        {
+            followerId = await _authorRepository.createAuthorAsync(email, email);
+        }
+        
+        // follow logic here:
+        
+        var followedId = await _authorRepository.getAuthorByNameAsync(author);
+        await _authorRepository.CreateFollowingAsync(followerId, followedId);
+
+        // Redirect so OnGet runs and fills Cheeps
+        return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
     }
 
-
-       
-
-
+    
+    
     public ActionResult OnGet(int? pageIndex)
     {
         var page = pageIndex ?? 1;

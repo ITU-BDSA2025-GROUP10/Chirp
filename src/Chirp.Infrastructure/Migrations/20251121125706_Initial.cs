@@ -177,7 +177,7 @@ namespace Chirp.Infrastructure.Migrations
                 {
                     CheepId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Text = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    Text = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     AuthorId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -190,6 +190,28 @@ namespace Chirp.Infrastructure.Migrations
                         principalTable: "Authors",
                         principalColumn: "AuthorId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Followings",
+                columns: table => new
+                {
+                    FollowerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    FollowedId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Followings", x => new { x.FollowerId, x.FollowedId });
+                    table.ForeignKey(
+                        name: "FK_Followings_Authors_FollowedId",
+                        column: x => x.FollowedId,
+                        principalTable: "Authors",
+                        principalColumn: "AuthorId");
+                    table.ForeignKey(
+                        name: "FK_Followings_Authors_FollowerId",
+                        column: x => x.FollowerId,
+                        principalTable: "Authors",
+                        principalColumn: "AuthorId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -233,6 +255,11 @@ namespace Chirp.Infrastructure.Migrations
                 name: "IX_Cheeps_AuthorId",
                 table: "Cheeps",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Followings_FollowedId",
+                table: "Followings",
+                column: "FollowedId");
         }
 
         /// <inheritdoc />
@@ -255,6 +282,9 @@ namespace Chirp.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cheeps");
+
+            migrationBuilder.DropTable(
+                name: "Followings");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

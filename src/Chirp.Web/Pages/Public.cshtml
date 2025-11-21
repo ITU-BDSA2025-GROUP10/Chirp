@@ -33,27 +33,31 @@
         </script>
     }
     
-    @if (Model.Cheeps.Any())
+    @if (Model.Cheeps != null && Model.Cheeps.Any())
     {
         <ul id="Cheeplist" class="cheeps">
             @foreach (var cheep in Model.Cheeps)
             {
                 <li>
-                    <p>
+                    
                         <strong>
                             <a href="/@cheep.Author">@cheep.Author</a>
                         </strong>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <button class="nav-link btn btn-link p-0" type="submit">
-                                follow
-                            </button>
+                            <form method="post" asp-page-handler="Follow" style="display:inline">
+                                <input type="hidden" name="author" value="@cheep.Author" />
+                                <input type="hidden" name="pageIndex" value="@Model.PageIndex" />
+                                <button class="nav-link btn btn-link p-0" type="submit">
+                                    follow
+                                </button>
+                            </form>
                         }
                         <br>
                         @cheep.Cheep
                         <br>
                         <small>&mdash; @cheep.Timestamp</small>
-                    </p>
+                    
                 </li>
             }
         </ul>

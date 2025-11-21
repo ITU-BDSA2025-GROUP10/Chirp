@@ -17,21 +17,6 @@ namespace Chirp.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("AuthorAuthor", b =>
-                {
-                    b.Property<int>("FollowersAuthorId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FollowingAuthorId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("FollowersAuthorId", "FollowingAuthorId");
-
-                    b.HasIndex("FollowingAuthorId");
-
-                    b.ToTable("AuthorAuthor");
-                });
-
             modelBuilder.Entity("Chirp.Core.Models.Author", b =>
                 {
                     b.Property<int>("AuthorId")
@@ -75,6 +60,21 @@ namespace Chirp.Infrastructure.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Cheeps");
+                });
+
+            modelBuilder.Entity("Chirp.Core.Models.Following", b =>
+                {
+                    b.Property<int>("FollowerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("FollowedId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("FollowerId", "FollowedId");
+
+                    b.HasIndex("FollowedId");
+
+                    b.ToTable("Followings");
                 });
 
             modelBuilder.Entity("Chirp.Infrastructure.ApplicationAuthor", b =>
@@ -273,21 +273,6 @@ namespace Chirp.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("AuthorAuthor", b =>
-                {
-                    b.HasOne("Chirp.Core.Models.Author", null)
-                        .WithMany()
-                        .HasForeignKey("FollowersAuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Chirp.Core.Models.Author", null)
-                        .WithMany()
-                        .HasForeignKey("FollowingAuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Chirp.Core.Models.Cheep", b =>
                 {
                     b.HasOne("Chirp.Core.Models.Author", "Author")
@@ -297,6 +282,25 @@ namespace Chirp.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Chirp.Core.Models.Following", b =>
+                {
+                    b.HasOne("Chirp.Core.Models.Author", "Followed")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowedId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Chirp.Core.Models.Author", "Follower")
+                        .WithMany("Following")
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Followed");
+
+                    b.Navigation("Follower");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -353,6 +357,10 @@ namespace Chirp.Infrastructure.Migrations
             modelBuilder.Entity("Chirp.Core.Models.Author", b =>
                 {
                     b.Navigation("Cheeps");
+
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
                 });
 #pragma warning restore 612, 618
         }
