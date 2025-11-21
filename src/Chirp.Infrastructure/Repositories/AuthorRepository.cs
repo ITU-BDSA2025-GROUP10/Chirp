@@ -42,7 +42,7 @@ public class AuthorRepository : IAuthorRepository
     }
     
     
-    // Create a new author with a email and name, and sets the id automatically 
+    // Create a new author with an email and name, and sets the id automatically 
     public async Task<int> createAuthorAsync(string name, string email)
     {
         var author = new Author
@@ -57,10 +57,22 @@ public class AuthorRepository : IAuthorRepository
         return author.AuthorId;
     }
     
-    // Delete a author from the database.
+    // Delete an author from the database.
     public async Task deleteAuthorAsync(int id)
     {
         _db.Authors.Remove(await _db.Authors.FindAsync(id));
         await _db.SaveChangesAsync();
+    }
+    // Create list of whom the user is following
+    public async Task<List<Author>> GetFollowingAsync()
+    {
+        List<Author> authors = new List<Author>();
+        return authors;
+    }
+    // Create list of who is following the user
+    public async Task<List<Author>> GetFollowersAsync()
+    {
+        List<Author> authors = new List<Author>();
+        return authors;
     }
 }
