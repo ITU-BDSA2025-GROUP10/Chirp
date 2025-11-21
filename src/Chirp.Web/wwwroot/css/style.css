@@ -68,6 +68,9 @@ div.page div.navigation {
   color: #888;
   font-size: 12px;
   letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 div.page div.navigation a {
