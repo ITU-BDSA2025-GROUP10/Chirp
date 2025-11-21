@@ -22,6 +22,7 @@ builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn
 .AddEntityFrameworkStores<ChatDBContext>();
 
 //github login
+
 builder.Services.AddAuthentication()
     .AddGitHub(options =>
     {
