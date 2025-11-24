@@ -42,7 +42,7 @@ public class AuthorRepository : IAuthorRepository
     }
     
     
-    // Create a new author with a email and name, and sets the id automatically 
+    // Create a new author with an email and name, and sets the id automatically 
     public async Task<int> createAuthorAsync(string name, string email)
     {
         var author = new Author
@@ -57,10 +57,42 @@ public class AuthorRepository : IAuthorRepository
         return author.AuthorId;
     }
     
-    // Delete a author from the database.
+    // Delete an author from the database.
     public async Task deleteAuthorAsync(int id)
     {
         _db.Authors.Remove(await _db.Authors.FindAsync(id));
+        await _db.SaveChangesAsync();
+    }
+    
+    // Create list of whom the user is following
+    // Create relation: followerId follows followedId
+    public async Task CreateFollowingAsync(int followerId, int followedId)
+    {
+        // Optional: validate both authors exist
+        var followerExists = await _db.Authors.AnyAsync(a => a.AuthorId == followerId);
+        var followedExists = await _db.Authors.AnyAsync(a => a.AuthorId == followedId);
+
+        if (!followerExists || !followedExists)
+        {
+            throw new KeyNotFoundException("Follower or followed author does not exist");
+        }
+
+        // Avoid duplicates
+        var alreadyFollowing = await _db.Followings.AnyAsync(f =>
+            f.FollowerId == followerId && f.FollowedId == followedId);
+
+        if (alreadyFollowing)
+        {
+            return; // can be thrown if not necessary
+        }
+
+        var following = new Following
+        {
+            FollowerId = followerId,
+            FollowedId = followedId
+        };
+
+        _db.Followings.Add(following);
         await _db.SaveChangesAsync();
     }
 }
