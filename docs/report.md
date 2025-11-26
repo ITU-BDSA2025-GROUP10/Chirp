@@ -2,7 +2,7 @@
 title: _Chirp!_ Project Report
 subtitle: ITU BDSA 2025 Group 10
 author:
-- "Adnreas Hyldal <ahyl@itu.dk>"
+- "Andreas Hyldal <ahyl@itu.dk>"
 - "Cornelius Baasch Andersen <Coan@itu.dk>"
 - "Jacob Folkmann <jafo@itu.dk>"
 - "Jacob Hørberg <jacho@itu.dk>"
