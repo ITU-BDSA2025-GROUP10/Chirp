@@ -479,6 +479,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
-# ignore only this file
-src/Chirp.Web/Chat.db
