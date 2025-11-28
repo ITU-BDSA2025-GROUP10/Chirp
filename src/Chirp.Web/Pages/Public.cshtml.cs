@@ -11,6 +11,7 @@ public class PublicModel : PageModel
     private readonly ICheepService _service;
     private readonly IConfiguration _configuration;
     private readonly IAuthorRepository _authorRepository;
+    private readonly ICommentRepository _commentRepository;
     public List<CheepViewModel> Cheeps { get; set; }
 
     public int PageIndex { get; private set; }
@@ -43,11 +44,12 @@ public class PublicModel : PageModel
         
     }
     
-    public PublicModel(ICheepService service, IConfiguration configuration, IAuthorRepository authorRepository)
+    public PublicModel(ICheepService service, IConfiguration configuration, IAuthorRepository authorRepository, ICommentRepository commentRepository)
     {
         _service = service;
         _configuration = configuration;
         _authorRepository = authorRepository;
+        _commentRepository = commentRepository;
     }
     
     public async Task<IActionResult> OnPostFollowAsync(string author, int? pageIndex)
@@ -65,9 +67,9 @@ public class PublicModel : PageModel
         {
             followerId = await _authorRepository.createAuthorAsync(email, email);
         }
-        
+
         // follow logic here:
-        
+
         var followedId = await _authorRepository.getAuthorByNameAsync(author);
         await _authorRepository.CreateFollowingAsync(followerId, followedId);
 
@@ -75,8 +77,32 @@ public class PublicModel : PageModel
         return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
     }
 
-    
-    
+    public async Task<IActionResult> OnPostCommentAsync(int cheepId, string commentText, int? pageIndex)
+    {
+        if (!User.Identity?.IsAuthenticated ?? true)
+            return RedirectToPage();
+
+        if (string.IsNullOrWhiteSpace(commentText))
+            return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
+
+        var authorName = User.Identity.Name!;
+        await _commentRepository.CreateCommentAsync(new Core.Models.CommentDTO
+        {
+            Text = commentText,
+            AuthorName = authorName,
+            CheepId = cheepId,
+            TimeStamp = DateTime.UtcNow
+        });
+
+        return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
+    }
+
+    public async Task<IActionResult> OnGetCommentsAsync(int cheepId)
+    {
+        var comments = await _commentRepository.GetCommentsByCheepIdAsync(cheepId);
+        return new JsonResult(comments);
+    }
+
     public ActionResult OnGet(int? pageIndex)
     {
         var page = pageIndex ?? 1;

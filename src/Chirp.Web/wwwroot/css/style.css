@@ -229,3 +229,95 @@ li.topic {
   -webkit-border-radius: 5px;
   min-height: 20px;
 }
+
+/* Comment Section Styles */
+div.comment-section {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #DBF3F1;
+}
+
+button.comment-toggle {
+  background: none;
+  border: 1px solid #DBF3F1;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 12px;
+  color: #26776F;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+
+button.comment-toggle:hover {
+  background-color: #E3EBEA;
+}
+
+span.dropdown-icon {
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+div.comments-container {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #E3EBEA;
+  border-left: 3px solid #26776F;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+
+form.comment-form {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+form.comment-form input[type="text"] {
+  flex: 1;
+  padding: 5px;
+  width: auto;
+}
+
+form.comment-form button {
+  background: #571010;
+  border: 1px solid #3b0707;
+  padding: 5px 10px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  color: white;
+  cursor: pointer;
+}
+
+div.comments-list {
+  margin-top: 10px;
+}
+
+div.comment-item {
+  padding: 8px;
+  margin-bottom: 5px;
+  background: white;
+  border-left: 2px solid #cc6e6e;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  font-size: 13px;
+}
+
+div.comment-item strong {
+  color: #26776F;
+}
+
+div.comment-item small {
+  font-size: 0.85em;
+  color: #888;
+}

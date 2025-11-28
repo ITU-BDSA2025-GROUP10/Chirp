@@ -12,4 +12,6 @@ public class Cheep
     // FK + navigation to Author (author)
     public int AuthorId { get; set; }
     public Author Author { get; set; } = null!;
+    
+    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 }
