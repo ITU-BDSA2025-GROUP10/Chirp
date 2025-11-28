@@ -1,0 +1,33 @@
+@page "/following"
+@using Microsoft.AspNetCore.Routing
+@model Chirp.Web.Pages.FollowingTimelineModel
+
+@{
+    ViewData["Title"] = "Following timeline";
+    Layout = "Shared/_Layout";
+    var routeName = HttpContext.GetRouteValue("author");
+}
+
+<h2>following timeline</h2>
+
+@if (!Model.Cheeps.Any())
+{
+    <p>no cheeps yet from people you follow.</p>
+}
+else
+{
+    <ul id="Cheeplist" class="cheeps">
+        @foreach (var cheep in Model.Cheeps)
+        {
+            <li>
+                <p>
+                    <strong>
+                        <a href="/@cheep.Author">@cheep.Author</a><br />
+                    </strong>
+                    @cheep.Cheep<br />
+                    <small>&mdash; @cheep.Timestamp</small>
+                </p>
+            </li>
+        }
+    </ul>
+}
