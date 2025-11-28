@@ -10,6 +10,8 @@ public class ChatDBContext : IdentityDbContext<ApplicationAuthor>
     public DbSet<Author?> Authors { get; set; }
     public DbSet<Following?> Followings { get; set; }
     
+    public DbSet<Comment> Comments { get; set; }
+    
 
     public ChatDBContext(DbContextOptions<ChatDBContext> options)
         : base(options)
@@ -35,5 +37,20 @@ public class ChatDBContext : IdentityDbContext<ApplicationAuthor>
             .WithMany(a => a.Followers)
             .HasForeignKey(f => f.FollowedId)
             .OnDelete(DeleteBehavior.NoAction);
+        
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.Cheep)
+            .WithMany(c => c.Comments)
+            .HasForeignKey(c => c.CheepId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.Author)
+            .WithMany()
+            .HasForeignKey(c => c.AuthorId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
+    
+    
+    
 }

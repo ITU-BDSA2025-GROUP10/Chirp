@@ -1,6 +1,6 @@
 namespace Chirp.Infrastructure.Service;
 
-public record CheepViewModel(string Author, string Cheep, string Timestamp);
+public record CheepViewModel(int Id, string Author, string Cheep, string Timestamp, int CommentCount);
 public interface ICheepService
 {
 

@@ -19,6 +19,7 @@ public class CheepRepository : ICheepRepository
         var q = _db.Cheeps
                    .AsNoTracking()
                    .Include(m => m.Author)
+                   .Include(m => m.Comments)
                    .OrderByDescending(m => m.TimeStamp)
                    .AsQueryable();
 
@@ -28,12 +29,14 @@ public class CheepRepository : ICheepRepository
         var items = await q.Skip(page * pageSize)
                            .Take(pageSize)
                            .Select(m => new CheepDTO
-                           {
-                               Id = m.CheepId,
-                               Author = m.Author.Name,
-                               Text = m.Text,
-                               Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss", CultureInfo.InvariantCulture)})
-                           .ToListAsync();
+                                   {
+                                       Id = m.CheepId,
+                                       Author = m.Author.Name,
+                                       Text = m.Text,
+                                       Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss", CultureInfo.InvariantCulture),
+                                       CommentCount = m.Comments.Count
+                                   })
+                               .ToListAsync();
 
         return items;
     }

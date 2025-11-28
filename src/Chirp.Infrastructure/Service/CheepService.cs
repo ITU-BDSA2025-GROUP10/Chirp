@@ -15,27 +15,33 @@ public class CheepService : ICheepService
         => _db.Cheeps
               .AsNoTracking()
               .Include(m => m.Author)
+              .Include(m => m.Comments)
               .OrderByDescending(m => m.TimeStamp)
               .Skip(page * pageSize)
               .Take(pageSize)
               .Select(m => new CheepViewModel(
+                    m.CheepId,
                     m.Author.Name,
                     m.Text,
-                    m.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+                    m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+                    m.Comments.Count))
               .ToList();
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author, int page = 0, int pageSize = 32)
         => _db.Cheeps
               .AsNoTracking()
               .Include(m => m.Author)
+              .Include(m => m.Comments)
               .Where(m => m.Author.Name == author)
               .OrderByDescending(m => m.TimeStamp)
               .Skip(page * pageSize)
               .Take(pageSize)
               .Select(m => new CheepViewModel(
+                    m.CheepId,
                     m.Author.Name,
                     m.Text,
-                    m.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+                    m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+                    m.Comments.Count))
               .ToList();
 
     public async Task CreateCheepAsync(string authorName, string text)
