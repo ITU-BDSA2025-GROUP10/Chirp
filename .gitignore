@@ -480,5 +480,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Vim temporary swap files
-*.swp/src/Chirp.Web/Chat.db
+# ignore only this file
+src/Chirp.Web/Chat.db
