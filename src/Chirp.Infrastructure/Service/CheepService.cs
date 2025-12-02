@@ -64,4 +64,43 @@ public class CheepService : ICheepService
 
         await _db.SaveChangesAsync();
     }
+    
+    public List<CheepViewModel> GetCheepsFromFollowing(string currentAuthor, int page = 0, int pageSize = 32)
+    {
+        // 1) Find the current author row
+        var author = _db.Authors
+            .AsNoTracking()
+            .SingleOrDefault(a => a.Name == currentAuthor);
+
+        if (author is null)
+            return new List<CheepViewModel>();
+
+        var currentAuthorId = author.AuthorId;
+
+        // 2) All author IDs that current author follows
+        var followedIds = _db.Followings
+            .Where(f => f.FollowerId == currentAuthorId)
+            .Select(f => f.FollowedId)
+            .ToList();
+
+        if (followedIds.Count == 0)
+            return new List<CheepViewModel>();
+
+        // 3) Cheeps from followed authors (only)
+        return _db.Cheeps
+            .AsNoTracking()
+            .Include(m => m.Author)
+            .Include(m => m.Comments)
+            .Where(m => followedIds.Contains(m.AuthorId))
+            .OrderByDescending(m => m.TimeStamp)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Select(m => new CheepViewModel(
+                m.CheepId,
+                m.Author.Name,
+                m.Text,
+                m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+                m.Comments.Count))
+            .ToList();
+    }
 }
