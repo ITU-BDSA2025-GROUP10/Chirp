@@ -58,10 +58,40 @@ public class AuthorRepository : IAuthorRepository
     }
     
     // Delete an author from the database.
-    public async Task deleteAuthorAsync(int id)
+    public async Task DeleteAuthorAsync(int id)
     {
-        _db.Authors.Remove(await _db.Authors.FindAsync(id));
+        var author = await _db.Authors
+            .Include(a => a.Cheeps)
+            .Include(a => a.Following)
+            .Include(a => a.Followers)
+            .FirstOrDefaultAsync(a => a.AuthorId == id);
+
+        if (author == null)
+        {
+            throw new KeyNotFoundException($"Author with id {id} does not exist");
+        }
+
+        // Manually delete Following relationships (NoAction behavior)
+        _db.Followings.RemoveRange(author.Following);
+        _db.Followings.RemoveRange(author.Followers);
+
+        // Delete all comments by this author
+        var comments = await _db.Comments
+            .Where(c => c.AuthorId == id)
+            .ToListAsync();
+        _db.Comments.RemoveRange(comments);
+
+        // Cheeps will cascade delete (along with their comments)
+        // Now delete the author
+        _db.Authors.Remove(author);
+
         await _db.SaveChangesAsync();
+    }
+    
+    public async Task DeleteAuthorByEmailAsync(string email)
+    {
+        var authorId = await getAuthorByEmailAsync(email);
+        await DeleteAuthorAsync(authorId);
     }
     
     // Create list of whom the user is following
@@ -108,5 +138,13 @@ public class AuthorRepository : IAuthorRepository
             _db.Followings.Remove(follow);
             await _db.SaveChangesAsync();
         }
+    }
+    
+    public async Task<Author> GetAuthorWithFollowingAsync(int authorId)
+    {
+        return await _db.Authors
+            .Include(a => a.Following)
+            .ThenInclude(f => f.Followed)
+            .FirstOrDefaultAsync(a => a.AuthorId == authorId);
     }
 }

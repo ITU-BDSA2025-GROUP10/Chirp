@@ -10,10 +10,14 @@ public interface IAuthorRepository
     Task<int> getAuthorByEmailAsync(string email);
     // Create a new author with a email and name (id should be set automatically 
     Task<int> createAuthorAsync(string name, string email);
-    // Delete a author from the database.
-    Task deleteAuthorAsync(int id);
+    // Delete an author from the database.
+    Task DeleteAuthorAsync(int id);
+    // Delete an author by email.
+    Task DeleteAuthorByEmailAsync(string email);
     
     Task CreateFollowingAsync(int followerId, int followedId);
+    
+    Task<Author> GetAuthorWithFollowingAsync(int authorId);
     Task DeleteFollowingAsync(int followerId, int followedId);
     
 }
