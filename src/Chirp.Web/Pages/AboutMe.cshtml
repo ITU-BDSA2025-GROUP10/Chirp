@@ -1,0 +1,77 @@
+@page
+  @model Chirp.Web.Pages.AboutMeModel
+  @{
+      ViewData["Title"] = "About Me";
+      Layout = "Shared/_Layout";
+  }
+
+  <div>
+      <h2>About Me</h2>
+
+      <div class="user-info">
+          <h3>Personal Information</h3>
+          <p><strong>Username:</strong> @Model.UserName</p>
+          <p><strong>Email:</strong> @Model.Email</p>
+      </div>
+
+      <div class="following-section">
+          <h3>Following (@Model.Following.Count)</h3>
+          @if (Model.Following.Any())
+          {
+              <ul>
+                  @foreach (var followedAuthor in Model.Following)
+                  {
+                      <li>@followedAuthor.Name</li>
+                  }
+              </ul>
+          }
+          else
+          {
+              <p>You are not following anyone yet.</p>
+          }
+      </div>
+
+      <div class="cheeps-section">
+          <h3>My Cheeps (@Model.UserCheeps.Count)</h3>
+          @if (Model.UserCheeps.Any())
+          {
+              <ul>
+                  @foreach (var cheep in Model.UserCheeps)
+                  {
+                      <li>
+                          <strong>@cheep.Timestamp</strong>: @cheep.Text
+                      </li>
+                  }
+              </ul>
+          }
+          else
+          {
+              <p>You haven't posted any cheeps yet.</p>
+          }
+      </div>
+
+      <hr />
+
+      <div class="danger-zone">
+          <h3 style="color: red;">Danger Zone</h3>
+          <p><strong>Once you delete your account, there is no going back. Please be
+  certain.</strong></p>
+
+          <form method="post" asp-page-handler="Delete">
+              <div asp-validation-summary="All" class="text-danger"></div>
+              @if (Model.RequirePassword)
+              {
+                  <div class="form-group">
+                      <label asp-for="Input.Password">Confirm your password to delete account:</label>
+                      <input asp-for="Input.Password" class="form-control" type="password" 
+  style="max-width: 300px;" />
+                      <span asp-validation-for="Input.Password" class="text-danger"></span>
+                  </div>
+              }
+              <button type="submit" class="btn btn-danger" style="background-color: red; color: white; 
+  padding: 10px 20px; font-weight: bold;">
+                  Forget me!
+              </button>
+          </form>
+      </div>
+  </div>
