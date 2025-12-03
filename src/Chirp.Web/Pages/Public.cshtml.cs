@@ -77,6 +77,17 @@ public class PublicModel : PageModel
         return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
     }
 
+    public async Task<IActionResult> OnPostUnfollowAsync(string author, int? pageIndex)
+    {
+        var followerName = User.Identity!.Name!;
+        var followerId = await _authorRepository.getAuthorByNameAsync(followerName);
+        var followedId = await _authorRepository.getAuthorByNameAsync(author);
+
+        await _authorRepository.DeleteFollowingAsync(followerId, followedId);
+
+        return RedirectToPage(new { pageIndex = pageIndex ?? 0 });
+    }
+
     public async Task<IActionResult> OnPostCommentAsync(int cheepId, string commentText, int? pageIndex)
     {
         if (!User.Identity?.IsAuthenticated ?? true)
@@ -110,7 +121,8 @@ public class PublicModel : PageModel
 
         PageSize = _configuration?.GetValue<int>("PageSize", 32) ?? 32;
 
-        var items = _service.GetCheeps(page - 1, PageSize + 1);
+        var currentUser = User.Identity?.Name;
+        var items = _service.GetCheeps(currentUser, - 1, PageSize + 1);
 
         HasNextPage = items.Count > PageSize;
         HasPreviousPage = page > 1;

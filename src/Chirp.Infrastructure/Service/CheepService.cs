@@ -11,38 +11,78 @@ public class CheepService : ICheepService
 
     public CheepService(ChatDBContext db) => _db = db;
 
+    private List<int> GetFollowedIds(string? currentAuthor)
+    {
+        if (string.IsNullOrEmpty(currentAuthor))
+            return new List<int>();
+
+        var author = _db.Authors
+            .AsNoTracking()
+            .SingleOrDefault(a => a.Name == currentAuthor);
+
+        if (author is null)
+            return new List<int>();
+
+        var currentAuthorId = author.AuthorId;
+
+        return _db.Followings
+            .Where(f => f.FollowerId == currentAuthorId)
+            .Select(f => f.FollowedId)
+            .ToList();
+    }
     public List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32)
-        => _db.Cheeps
-              .AsNoTracking()
-              .Include(m => m.Author)
-              .Include(m => m.Comments)
-              .OrderByDescending(m => m.TimeStamp)
-              .Skip(page * pageSize)
-              .Take(pageSize)
-              .Select(m => new CheepViewModel(
-                    m.CheepId,
-                    m.Author.Name,
-                    m.Text,
-                    m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-                    m.Comments.Count))
-              .ToList();
+        => GetCheeps(null, page, pageSize);
+
+    public List<CheepViewModel> GetCheeps(string? currentAuthor, int page = 0, int pageSize = 32)
+    {
+        var followedIds = GetFollowedIds(currentAuthor);
+
+        return _db.Cheeps
+            .AsNoTracking()
+            .Include(m => m.Author)
+            .Include(m => m.Comments)
+            .OrderByDescending(m => m.TimeStamp)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Select(m => new CheepViewModel(
+                m.CheepId,
+                m.Author.Name,
+                m.Text,
+                m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+                m.Comments.Count,
+                followedIds.Contains(m.AuthorId) // <- true only if you follow this author
+            ))
+            .ToList();
+    }
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author, int page = 0, int pageSize = 32)
-        => _db.Cheeps
-              .AsNoTracking()
-              .Include(m => m.Author)
-              .Include(m => m.Comments)
-              .Where(m => m.Author.Name == author)
-              .OrderByDescending(m => m.TimeStamp)
-              .Skip(page * pageSize)
-              .Take(pageSize)
-              .Select(m => new CheepViewModel(
-                    m.CheepId,
-                    m.Author.Name,
-                    m.Text,
-                    m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-                    m.Comments.Count))
-              .ToList();
+        => GetCheepsFromAuthor(author, null, page, pageSize);
+    public List<CheepViewModel> GetCheepsFromAuthor(
+        string author,
+        string? currentAuthor,
+        int page = 0,
+        int pageSize = 32)
+    {
+        var followedIds = GetFollowedIds(currentAuthor);
+
+        return _db.Cheeps
+            .AsNoTracking()
+            .Include(m => m.Author)
+            .Include(m => m.Comments)
+            .Where(m => m.Author.Name == author)
+            .OrderByDescending(m => m.TimeStamp)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Select(m => new CheepViewModel(
+                m.CheepId,
+                m.Author.Name,
+                m.Text,
+                m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+                m.Comments.Count,
+                followedIds.Contains(m.AuthorId)  // <- again: true only if you follow this author
+            ))
+            .ToList();
+    }
 
     public async Task CreateCheepAsync(string authorName, string text)
     {
@@ -67,26 +107,10 @@ public class CheepService : ICheepService
     
     public List<CheepViewModel> GetCheepsFromFollowing(string currentAuthor, int page = 0, int pageSize = 32)
     {
-        // 1) Find the current author row
-        var author = _db.Authors
-            .AsNoTracking()
-            .SingleOrDefault(a => a.Name == currentAuthor);
-
-        if (author is null)
-            return new List<CheepViewModel>();
-
-        var currentAuthorId = author.AuthorId;
-
-        // 2) All author IDs that current author follows
-        var followedIds = _db.Followings
-            .Where(f => f.FollowerId == currentAuthorId)
-            .Select(f => f.FollowedId)
-            .ToList();
-
+        var followedIds = GetFollowedIds(currentAuthor);
         if (followedIds.Count == 0)
             return new List<CheepViewModel>();
 
-        // 3) Cheeps from followed authors (only)
         return _db.Cheeps
             .AsNoTracking()
             .Include(m => m.Author)
@@ -100,7 +124,9 @@ public class CheepService : ICheepService
                 m.Author.Name,
                 m.Text,
                 m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-                m.Comments.Count))
+                m.Comments.Count,
+                true  // by definition: in this feed you only see people you follow
+            ))
             .ToList();
     }
 }

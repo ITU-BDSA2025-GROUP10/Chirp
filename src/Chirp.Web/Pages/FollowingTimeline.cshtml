@@ -20,10 +20,37 @@ else
         @foreach (var cheep in Model.Cheeps)
         {
             <li>
-                <p>
+                <div class="cheep-header">
                     <strong>
-                        <a href="/@cheep.Author">@cheep.Author</a><br />
+                        <a href="/@cheep.Author">@cheep.Author</a>
                     </strong>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        if (cheep.isFollowed)
+                        {
+                            <form method="post" asp-page-handler="Unfollow" style="display:inline">
+                                <input type="hidden" name="author" value="@cheep.Author" />
+                                <input type="hidden" name="pageIndex" value="@Model.PageIndex" />
+                                <button class="nav-link btn btn-link p-0" type="submit">
+                                    Unfollow
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="Follow" style="display:inline">
+                                <input type="hidden" name="author" value="@cheep.Author" />
+                                <input type="hidden" name="pageIndex" value="@Model.PageIndex" />
+                                <button class="nav-link btn btn-link p-0" type="submit">
+                                    follow
+                                </button>
+                            </form>
+                        }
+                    }
+                </div>
+
+                <p>
                     @cheep.Cheep<br />
                     <small>&mdash; @cheep.Timestamp</small>
                 </p>
