@@ -18,4 +18,6 @@ public interface IAuthorRepository
     Task CreateFollowingAsync(int followerId, int followedId);
     
     Task<Author> GetAuthorWithFollowingAsync(int authorId);
+    Task DeleteFollowingAsync(int followerId, int followedId);
+    
 }

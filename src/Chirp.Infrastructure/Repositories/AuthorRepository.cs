@@ -126,6 +126,20 @@ public class AuthorRepository : IAuthorRepository
         await _db.SaveChangesAsync();
     }
     
+    public async Task DeleteFollowingAsync(int followerId, int followedId)
+    {
+        var follow = await _db.Followings
+            .SingleOrDefaultAsync(f =>
+                f.FollowerId == followerId &&
+                f.FollowedId == followedId);
+
+        if (follow != null)
+        {
+            _db.Followings.Remove(follow);
+            await _db.SaveChangesAsync();
+        }
+    }
+    
     public async Task<Author> GetAuthorWithFollowingAsync(int authorId)
     {
         return await _db.Authors
