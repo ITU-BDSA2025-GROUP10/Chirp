@@ -108,9 +108,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
             .WithMessage("Author with name 'missing@example.com' does not exist*");
     }
 
-    // ---------------------------------------------------------
     //  DELETE AUTHOR
-    // ---------------------------------------------------------
 
     [Fact]
     public async Task DeleteAuthorAsync_RemovesAuthor_WhenExists()
@@ -135,9 +133,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         exists.Should().BeFalse();
     }
 
-    // ---------------------------------------------------------
     //  CREATE FOLLOWING RELATIONSHIP
-    // ---------------------------------------------------------
 
     [Fact]
     public async Task CreateFollowingAsync_CreatesRelation_WhenBothExist()
