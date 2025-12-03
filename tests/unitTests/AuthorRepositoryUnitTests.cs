@@ -125,7 +125,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         await using var ctx = _fx.CreateContext();
         var repo = new AuthorRepository(ctx);
 
-        await repo.deleteAuthorAsync(id);
+        await repo.DeleteAuthorAsync(id);
 
         await using var verify = _fx.CreateContext();
         var exists = await verify.Authors.AnyAsync(a => a.AuthorId == id);
