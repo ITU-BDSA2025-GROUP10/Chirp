@@ -2,13 +2,14 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationAuthor> SignInManager
 @inject UserManager<ApplicationAuthor> AuthorManager
-    
+
 <div class="navigation">
     @if (SignInManager.IsSignedIn(User))
     {
         <a href="/@AuthorManager.GetUserName(User)">my timeline</a>
         <a href="/">public timeline</a>
         <a href="/following">following timeline</a>
+        <a href="/AboutMe">about me</a>
         <form asp-area="Identity" asp-page="/Account/Logout"
               asp-route-returnUrl="@Url.Page("/", new { area = "" })"
               method="post" style="display:inline">

@@ -48,7 +48,13 @@ public class ChatDBContext : IdentityDbContext<ApplicationAuthor>
             .HasOne(c => c.Author)
             .WithMany()
             .HasForeignKey(c => c.AuthorId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Cheep>()
+            .HasOne(c => c.Author)
+            .WithMany(a => a.Cheeps)
+            .HasForeignKey(c => c.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
     
     
