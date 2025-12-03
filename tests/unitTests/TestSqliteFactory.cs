@@ -20,8 +20,6 @@ public sealed class TestSqliteFactory<TContext> : IAsyncLifetime
         await _connection.OpenAsync();
 
         using var ctx = CreateContext();
-        // If you use Migrations in production, replace EnsureCreated with:
-        // await ctx.Database.MigrateAsync();
         await ctx.Database.EnsureCreatedAsync();
     }
 

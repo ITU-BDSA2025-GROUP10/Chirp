@@ -1,19 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions; 
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
-using Chirp.Core.Models;                   // Cheep, author, CheepDTO
-using Chirp.Infrastructure;                 // ChatDBContext
-using Chirp.Infrastructure.Repositories;    // CheepRepository
 
-namespace Chirp.Tests;
+using Chirp.Core.Models;                 
+using Chirp.Infrastructure;                
+using Chirp.Infrastructure.Repositories;
+using Chirp.Tests;
 
-// If you already have TestSqliteFactory<ChatDBContext> in your test project,
-// this test class uses it directly. (It keeps a single open :memory: DB per class.)
+namespace unitTests;
+
+
 public class CheepRepositoryUnitTests : IAsyncLifetime
 {
     private TestSqliteFactory<ChatDBContext> _fx = null!;
@@ -26,7 +23,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    // ---------- CREATE ----------
+    //  CREATE
 
     [Fact]
     public async Task CreateCheepAsync_CreatesUserIfMissing_AndReturnsId()
@@ -67,7 +64,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
             .WithMessage(expectedMessage + "*");
     }
 
-    // ---------- READ ----------
+    //  READ
 
     [Fact]
     public async Task ReadCheepsAsync_ReturnsDescendingAndFiltersByAuthor()
@@ -139,7 +136,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
         combined.Should().Equal("c0","c1","c2","c3","c4");
     }
 
-    // ---------- UPDATE ----------
+    //  UPDATE 
 
     [Fact]
     public async Task UpdateCheepAsync_ChangesOnlyText_WhenCheepExists()
@@ -167,7 +164,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
         updated.Text.Should().Be("after");
     }
 
-    // ---------- DELETE ----------
+    //  DELETE 
 
     [Fact]
     public async Task DeleteCheepAsync_RemovesRow_WhenCheepExists()
