@@ -63,4 +63,4 @@ jobs:
           app-name: "bdsagroup10chirpremotedb"
           slot-name: "Production"
           package: ./package
-
+          clean: true
