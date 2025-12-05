@@ -39,18 +39,16 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 var app = builder.Build();
 
-// Run migrations + seed ONLY in Development (local)
-if (app.Environment.IsDevelopment())
+// Ensure DB is migrated and seeded in ALL environments
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ChatDBContext>();
 
-    // Creates DB if needed and applies all migrations
+    // 1) Create DB if needed + apply all migrations
     context.Database.Migrate();
-    context.Database.EnsureCreated();
 
-    // Seed initial data (your method should be idempotent)
+    // 2) Seed data (make sure DbInitializer.SeedDatabase is idempotent)
     DbInitializer.SeedDatabase(context);
 }
 
