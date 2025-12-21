@@ -95,7 +95,7 @@
                         <strong>
                             <a href="/@cheep.Author">@cheep.Author</a>
                         </strong>
-                        @if (User.Identity?.IsAuthenticated == true)
+                        @if (User.Identity?.IsAuthenticated == true && cheep.Author != User.Identity.Name)
                         {
                             if (cheep.isFollowed)
                             {
