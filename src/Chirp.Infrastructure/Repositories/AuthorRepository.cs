@@ -107,6 +107,12 @@ public class AuthorRepository : IAuthorRepository
             throw new KeyNotFoundException("Follower or followed author does not exist");
         }
 
+        // Prevent user from following themselves
+        if (followerId == followedId)
+        {
+            return;
+        }
+
         // Avoid duplicates
         var alreadyFollowing = await _db.Followings.AnyAsync(f =>
             f.FollowerId == followerId && f.FollowedId == followedId);
