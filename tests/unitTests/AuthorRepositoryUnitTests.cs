@@ -205,4 +205,145 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         count.Should().Be(1);  // no duplicate added
     }
+
+    //  DELETE FOLLOWING RELATIONSHIP
+
+    [Fact]
+    public async Task DeleteFollowingAsync_RemovesRelation_WhenExists()
+    {
+        int followerId, followedId;
+
+        await using (var seed = _fx.CreateContext())
+        {
+            var f = new Author { Name = "alice", Email = "alice@example.com" };
+            var t = new Author { Name = "bob", Email = "bob@example.com" };
+            seed.Authors.AddRange(f, t);
+            await seed.SaveChangesAsync();
+            followerId = f.AuthorId;
+            followedId = t.AuthorId;
+
+            seed.Followings.Add(new Following { FollowerId = followerId, FollowedId = followedId });
+            await seed.SaveChangesAsync();
+        }
+
+        await using var ctx = _fx.CreateContext();
+        var repo = new AuthorRepository(ctx);
+
+        await repo.DeleteFollowingAsync(followerId, followedId);
+
+        await using var verify = _fx.CreateContext();
+        var exists = await verify.Followings
+            .AnyAsync(f => f.FollowerId == followerId && f.FollowedId == followedId);
+
+        exists.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task DeleteFollowingAsync_DoesNotThrow_WhenRelationDoesNotExist()
+    {
+        int followerId, followedId;
+
+        await using (var seed = _fx.CreateContext())
+        {
+            var f = new Author { Name = "alice", Email = "alice@example.com" };
+            var t = new Author { Name = "bob", Email = "bob@example.com" };
+            seed.Authors.AddRange(f, t);
+            await seed.SaveChangesAsync();
+            followerId = f.AuthorId;
+            followedId = t.AuthorId;
+        }
+
+        await using var ctx = _fx.CreateContext();
+        var repo = new AuthorRepository(ctx);
+
+        // Should NOT throw - silently succeeds
+        Func<Task> act = async () => await repo.DeleteFollowingAsync(followerId, followedId);
+
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task DeleteFollowingAsync_DoesNotThrow_WhenAuthorIdsInvalid()
+    {
+        await using var ctx = _fx.CreateContext();
+        var repo = new AuthorRepository(ctx);
+
+        // Should NOT throw - silently succeeds
+        Func<Task> act = async () => await repo.DeleteFollowingAsync(9999, 8888);
+
+        await act.Should().NotThrowAsync();
+    }
+
+    //  GET AUTHOR WITH FOLLOWING
+
+    [Fact]
+    public async Task GetAuthorWithFollowingAsync_ReturnsAuthorWithFollowing_WhenExists()
+    {
+        int authorId, followedId1, followedId2;
+
+        await using (var seed = _fx.CreateContext())
+        {
+            var author = new Author { Name = "alice", Email = "alice@example.com" };
+            var followed1 = new Author { Name = "bob", Email = "bob@example.com" };
+            var followed2 = new Author { Name = "charlie", Email = "charlie@example.com" };
+            seed.Authors.AddRange(author, followed1, followed2);
+            await seed.SaveChangesAsync();
+
+            authorId = author.AuthorId;
+            followedId1 = followed1.AuthorId;
+            followedId2 = followed2.AuthorId;
+
+            seed.Followings.AddRange(
+                new Following { FollowerId = authorId, FollowedId = followedId1 },
+                new Following { FollowerId = authorId, FollowedId = followedId2 }
+            );
+            await seed.SaveChangesAsync();
+        }
+
+        await using var ctx = _fx.CreateContext();
+        var repo = new AuthorRepository(ctx);
+
+        var result = await repo.GetAuthorWithFollowingAsync(authorId);
+
+        result.Should().NotBeNull();
+        result!.Name.Should().Be("alice");
+        result.Following.Should().HaveCount(2);
+        result.Following.Should().Contain(f => f.FollowedId == followedId1);
+        result.Following.Should().Contain(f => f.FollowedId == followedId2);
+        result.Following.Should().OnlyContain(f => f.Followed != null);
+    }
+
+    [Fact]
+    public async Task GetAuthorWithFollowingAsync_ReturnsAuthorWithEmptyFollowing_WhenNoFollowing()
+    {
+        int authorId;
+
+        await using (var seed = _fx.CreateContext())
+        {
+            var author = new Author { Name = "alice", Email = "alice@example.com" };
+            seed.Authors.Add(author);
+            await seed.SaveChangesAsync();
+            authorId = author.AuthorId;
+        }
+
+        await using var ctx = _fx.CreateContext();
+        var repo = new AuthorRepository(ctx);
+
+        var result = await repo.GetAuthorWithFollowingAsync(authorId);
+
+        result.Should().NotBeNull();
+        result!.Name.Should().Be("alice");
+        result.Following.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetAuthorWithFollowingAsync_ReturnsNull_WhenAuthorDoesNotExist()
+    {
+        await using var ctx = _fx.CreateContext();
+        var repo = new AuthorRepository(ctx);
+
+        var result = await repo.GetAuthorWithFollowingAsync(9999);
+
+        result.Should().BeNull();
+    }
 }
