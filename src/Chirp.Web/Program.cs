@@ -54,6 +54,25 @@ if (app.Environment.IsDevelopment())
     DbInitializer.SeedDatabase(context);
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.MapPost("/test/create-user", async (UserManager<ApplicationAuthor> userManager) =>
+    {
+        var testUser = await userManager.FindByEmailAsync("test@chirp.dk");
+        if (testUser == null)
+        {
+            testUser = new ApplicationAuthor
+            {
+                UserName = "test@chirp.dk",
+                Email = "test@chirp.dk",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(testUser, "Test123!");
+        }
+        return Results.Ok();
+    });
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

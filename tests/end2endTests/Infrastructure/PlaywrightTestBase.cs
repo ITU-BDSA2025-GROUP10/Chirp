@@ -18,6 +18,20 @@ public abstract class PlaywrightTestBase : IAsyncLifetime
             .Build();
 
         BaseUrl = config["BaseUrl"]!;
+        TestEmail = config["TestUser:Email"]!;
+        TestPassword = config["TestUser:Password"]!;
+
+        // Create test user via HTTP endpoint before starting browser tests
+        using var httpClient = new HttpClient();
+        try
+        {
+            await httpClient.PostAsync($"{BaseUrl}/test/create-user", null);
+        }
+        catch
+        {
+            // Ignore errors - endpoint might not exist or app might not be running yet
+            // The test will fail later with a clearer message if the app isn't running
+        }
 
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
         Browser = await Playwright.Chromium.LaunchAsync(
@@ -25,9 +39,6 @@ public abstract class PlaywrightTestBase : IAsyncLifetime
 
         Context = await Browser.NewContextAsync();
         Page = await Context.NewPageAsync();
-        
-        TestEmail = config["TestUser:Email"]!;
-        TestPassword = config["TestUser:Password"]!;
     }
 
     public async Task DisposeAsync()
