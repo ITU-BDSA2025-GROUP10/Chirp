@@ -153,4 +153,23 @@ public class AuthorRepository : IAuthorRepository
             .ThenInclude(f => f.Followed)
             .FirstOrDefaultAsync(a => a.AuthorId == authorId);
     }
+
+    // Get list of author IDs that the given author is following
+    public async Task<List<int>> GetFollowedAuthorIdsAsync(string authorName)
+    {
+        if (string.IsNullOrEmpty(authorName))
+            return new List<int>();
+
+        var author = await _db.Authors
+            .AsNoTracking()
+            .SingleOrDefaultAsync(a => a.Name == authorName);
+
+        if (author is null)
+            return new List<int>();
+
+        return await _db.Followings
+            .Where(f => f.FollowerId == author.AuthorId)
+            .Select(f => f.FollowedId)
+            .ToListAsync();
+    }
 }

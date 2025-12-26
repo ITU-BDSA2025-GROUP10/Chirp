@@ -20,4 +20,6 @@ public interface IAuthorRepository
     Task<Author> GetAuthorWithFollowingAsync(int authorId);
     Task DeleteFollowingAsync(int followerId, int followedId);
     
+    // Get list of author IDs that the given author is following                                            ╎│
+    Task<List<int>> GetFollowedAuthorIdsAsync(string authorName);
 }

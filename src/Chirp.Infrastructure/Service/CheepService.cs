@@ -1,132 +1,92 @@
 using Chirp.Core.Models;
-using Microsoft.EntityFrameworkCore;
+using Chirp.Infrastructure.Repositories;
 
 namespace Chirp.Infrastructure.Service;
 
-
-
 public class CheepService : ICheepService
 {
-    private readonly ChatDBContext _db;
+    private readonly ICheepRepository _cheepRepo;
+    private readonly IAuthorRepository _authorRepo;
 
-    public CheepService(ChatDBContext db) => _db = db;
+    public CheepService(ICheepRepository cheepRepo, IAuthorRepository authorRepo)
+    {
+        _cheepRepo = cheepRepo;
+        _authorRepo = authorRepo;
+    }
 
-    private List<int> GetFollowedIds(string? currentAuthor)
+    private async Task<List<int>> GetFollowedIdsAsync(string? currentAuthor)
     {
         if (string.IsNullOrEmpty(currentAuthor))
             return new List<int>();
 
-        var author = _db.Authors
-            .AsNoTracking()
-            .SingleOrDefault(a => a.Name == currentAuthor);
-
-        if (author is null)
-            return new List<int>();
-
-        var currentAuthorId = author.AuthorId;
-
-        return _db.Followings
-            .Where(f => f.FollowerId == currentAuthorId)
-            .Select(f => f.FollowedId)
-            .ToList();
+        return await _authorRepo.GetFollowedAuthorIdsAsync(currentAuthor);
     }
     public List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32)
         => GetCheeps(null, page, pageSize);
 
     public List<CheepViewModel> GetCheeps(string? currentAuthor, int page = 0, int pageSize = 32)
     {
-        var followedIds = GetFollowedIds(currentAuthor);
+        var followedIds = GetFollowedIdsAsync(currentAuthor).Result;
+        var cheepDTOs = _cheepRepo.ReadCheepsAsync(author: null, page: page, pageSize: pageSize).Result;
 
-        return _db.Cheeps
-            .AsNoTracking()
-            .Include(m => m.Author)
-            .Include(m => m.Comments)
-            .OrderByDescending(m => m.TimeStamp)
-            .Skip(page * pageSize)
-            .Take(pageSize)
-            .Select(m => new CheepViewModel(
-                m.CheepId,
-                m.Author.Name,
-                m.Text,
-                m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-                m.Comments.Count,
-                followedIds.Contains(m.AuthorId) // <- true only if you follow this author
-            ))
-            .ToList();
+        return cheepDTOs.Select(dto => new CheepViewModel(
+            dto.Id,
+            dto.Author,
+            dto.Text,
+            dto.Timestamp ?? string.Empty,
+            dto.CommentCount,
+            followedIds.Contains(dto.AuthorId)
+        )).ToList();
     }
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author, int page = 0, int pageSize = 32)
         => GetCheepsFromAuthor(author, null, page, pageSize);
+
     public List<CheepViewModel> GetCheepsFromAuthor(
         string author,
         string? currentAuthor,
         int page = 0,
         int pageSize = 32)
     {
-        var followedIds = GetFollowedIds(currentAuthor);
+        var followedIds = GetFollowedIdsAsync(currentAuthor).Result;
+        var cheepDTOs = _cheepRepo.ReadCheepsAsync(author: author, page: page, pageSize: pageSize).Result;
 
-        return _db.Cheeps
-            .AsNoTracking()
-            .Include(m => m.Author)
-            .Include(m => m.Comments)
-            .Where(m => m.Author.Name == author)
-            .OrderByDescending(m => m.TimeStamp)
-            .Skip(page * pageSize)
-            .Take(pageSize)
-            .Select(m => new CheepViewModel(
-                m.CheepId,
-                m.Author.Name,
-                m.Text,
-                m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-                m.Comments.Count,
-                followedIds.Contains(m.AuthorId)  // <- again: true only if you follow this author
-            ))
-            .ToList();
+        return cheepDTOs.Select(dto => new CheepViewModel(
+            dto.Id,
+            dto.Author,
+            dto.Text,
+            dto.Timestamp ?? string.Empty,
+            dto.CommentCount,
+            followedIds.Contains(dto.AuthorId)
+        )).ToList();
     }
 
     public async Task CreateCheepAsync(string authorName, string text)
     {
-        // find or create author
-        var author = await _db.Authors.FirstOrDefaultAsync(u => u.Name == authorName);
-        if (author is null)
+        var dto = new CheepDTO
         {
-            author = new Author { Name = authorName };
-            _db.Authors.Add(author);
-            await _db.SaveChangesAsync();
-        }
+            Author = authorName,
+            Text = text
+        };
 
-        _db.Cheeps.Add(new Cheep
-        {
-            Text = text,
-            TimeStamp = DateTime.UtcNow,
-            AuthorId = author.AuthorId
-        });
-
-        await _db.SaveChangesAsync();
+        await _cheepRepo.CreateCheepAsync(dto);
     }
     
     public List<CheepViewModel> GetCheepsFromFollowing(string currentAuthor, int page = 0, int pageSize = 32)
     {
-        var followedIds = GetFollowedIds(currentAuthor);
+        var followedIds = GetFollowedIdsAsync(currentAuthor).Result;
         if (followedIds.Count == 0)
             return new List<CheepViewModel>();
 
-        return _db.Cheeps
-            .AsNoTracking()
-            .Include(m => m.Author)
-            .Include(m => m.Comments)
-            .Where(m => followedIds.Contains(m.AuthorId))
-            .OrderByDescending(m => m.TimeStamp)
-            .Skip(page * pageSize)
-            .Take(pageSize)
-            .Select(m => new CheepViewModel(
-                m.CheepId,
-                m.Author.Name,
-                m.Text,
-                m.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-                m.Comments.Count,
-                true  // by definition: in this feed you only see people you follow
-            ))
-            .ToList();
+        var cheepDTOs = _cheepRepo.ReadCheepsFromAuthorIdsAsync(followedIds, page, pageSize).Result;
+
+        return cheepDTOs.Select(dto => new CheepViewModel(
+            dto.Id,
+            dto.Author,
+            dto.Text,
+            dto.Timestamp ?? string.Empty,
+            dto.CommentCount,
+            true
+        )).ToList();
     }
 }
