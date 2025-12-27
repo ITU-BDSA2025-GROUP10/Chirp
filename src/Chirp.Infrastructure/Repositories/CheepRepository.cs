@@ -13,7 +13,7 @@ public class CheepRepository : ICheepRepository
         _db = db;
     }
 
-    // READ (optionally filter by author) + paging
+    // READ + paging
     public async Task<List<CheepDTO>> ReadCheepsAsync(string? author = null, int page = 0, int pageSize = 32)
     {
         var q = _db.Cheeps
@@ -31,12 +31,41 @@ public class CheepRepository : ICheepRepository
                            .Select(m => new CheepDTO
                                    {
                                        Id = m.CheepId,
+                                       AuthorId = m.AuthorId,
                                        Author = m.Author.Name,
                                        Text = m.Text,
                                        Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss", CultureInfo.InvariantCulture),
                                        CommentCount = m.Comments.Count
                                    })
                                .ToListAsync();
+
+        return items;
+    }
+
+    // READ cheeps from specific author IDs (for following feed)
+    public async Task<List<CheepDTO>> ReadCheepsFromAuthorIdsAsync(List<int> authorIds, int page = 0, int pageSize = 32)
+    {
+        if (authorIds == null || authorIds.Count == 0)
+            return new List<CheepDTO>();
+
+        var items = await _db.Cheeps
+            .AsNoTracking()
+            .Include(m => m.Author)
+            .Include(m => m.Comments)
+            .Where(m => authorIds.Contains(m.AuthorId))
+            .OrderByDescending(m => m.TimeStamp)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Select(m => new CheepDTO
+            {
+                Id = m.CheepId,
+                AuthorId = m.AuthorId,
+                Author = m.Author.Name,
+                Text = m.Text,
+                Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss", CultureInfo.InvariantCulture),
+                CommentCount = m.Comments.Count
+            })
+            .ToListAsync();
 
         return items;
     }
