@@ -346,4 +346,40 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         result.Should().BeNull();
     }
+    
+    [Fact]
+    public async Task GetFollowedAuthorIdsAsync_ReturnsCorrectIds_WhenFollowingMultiple()
+    {
+        int aliceId, bobId, charlieId;
+
+        await using (var seed = _fx.CreateContext())
+        {
+            var alice = new Author { Name = "alice", Email = "alice@example.com" };
+            var bob = new Author { Name = "bob", Email = "bob@example.com" };
+            var charlie = new Author { Name = "charlie", Email = "charlie@example.com" };
+            seed.Authors.AddRange(alice, bob, charlie);
+            await seed.SaveChangesAsync();
+
+            aliceId = alice.AuthorId;
+            bobId = bob.AuthorId;
+            charlieId = charlie.AuthorId;
+
+            // Alice follows both Bob and Charlie
+            seed.Followings.AddRange(
+                new Following { FollowerId = aliceId, FollowedId = bobId },
+                new Following { FollowerId = aliceId, FollowedId = charlieId }
+            );
+            await seed.SaveChangesAsync();
+        }
+
+        await using var ctx = _fx.CreateContext();
+        var repo = new AuthorRepository(ctx);
+
+        var result = await repo.GetFollowedAuthorIdsAsync("alice");
+
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
+        result.Should().Contain(bobId);
+        result.Should().Contain(charlieId);
+    }
 }
