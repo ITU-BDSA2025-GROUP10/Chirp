@@ -269,7 +269,61 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
     [Fact]
     public async Task UserUnFollowFunction()
     {
-        //
+        // Clear database to ensure test isolation
+        await ClearDatabaseAsync();
+
+        // ARRANGE: Create authors and set up following relationships
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+            var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+
+            // Create three authors
+            var alice = new Author { Name = "alice", Email = "alice@test.com" };
+            var bob = new Author { Name = "bob", Email = "bob@test.com" };
+            var charlie = new Author { Name = "charlie", Email = "charlie@test.com" };
+            db.Authors.AddRange(alice, bob, charlie);
+            await db.SaveChangesAsync();
+
+            // Alice follows both Bob and Charlie
+            await authorRepo.CreateFollowingAsync(alice.AuthorId, bob.AuthorId);
+            await authorRepo.CreateFollowingAsync(alice.AuthorId, charlie.AuthorId);
+
+            // Create cheeps for both Bob and Charlie
+            var bobCheep = new Cheep { AuthorId = bob.AuthorId, Text = "Bob's cheep", TimeStamp = DateTime.UtcNow };
+            var charlieCheep = new Cheep { AuthorId = charlie.AuthorId, Text = "Charlie's cheep", TimeStamp = DateTime.UtcNow };
+            db.Cheeps.AddRange(bobCheep, charlieCheep);
+            await db.SaveChangesAsync();
+        }
+
+        // ACT: Alice unfollows Charlie
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+            var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+
+            var alice = db.Authors.First(a => a.Name == "alice");
+            var charlie = db.Authors.First(a => a.Name == "charlie");
+
+            await authorRepo.DeleteFollowingAsync(alice.AuthorId, charlie.AuthorId);
+        }
+
+        // ASSERT: Verify Alice still follows Bob but no longer follows Charlie
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+
+            var alice = db.Authors.First(a => a.Name == "alice");
+            var bob = db.Authors.First(a => a.Name == "bob");
+            var charlie = db.Authors.First(a => a.Name == "charlie");
+
+            var followings = db.Followings.Where(f => f.FollowerId == alice.AuthorId).ToList();
+
+            // Alice should only follow Bob now
+            followings.Should().HaveCount(1);
+            followings.Should().Contain(f => f.FollowedId == bob.AuthorId);
+            followings.Should().NotContain(f => f.FollowedId == charlie.AuthorId);
+        }
     }
 
 	[Fact]
