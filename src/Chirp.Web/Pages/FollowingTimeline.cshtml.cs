@@ -9,6 +9,7 @@ public class FollowingTimelineModel : PageModel
 {
     private readonly ICheepService _cheepService;
     private readonly IAuthorRepository _authorRepository;
+    private readonly ICommentRepository _commentRepository;
     private const int PageSize = 32;
 
     // Use the view model, not CheepDTO
@@ -17,10 +18,11 @@ public class FollowingTimelineModel : PageModel
     [BindProperty(SupportsGet = true)]
     public int PageIndex { get; set; }
 
-    public FollowingTimelineModel(ICheepService cheepService, IAuthorRepository authorRepository)
+    public FollowingTimelineModel(ICheepService cheepService, IAuthorRepository authorRepository, ICommentRepository commentRepository)
     {
         _cheepService = cheepService;
         _authorRepository = authorRepository;
+        _commentRepository = commentRepository;
     }
 
     // Service API is synchronous, so this is synchronous too
@@ -38,7 +40,7 @@ public class FollowingTimelineModel : PageModel
             PageIndex,
             PageSize);
     }
-    
+
     public async Task<IActionResult> OnPostFollowAsync(string author, int? pageIndex)
     {
         var followerEmail = User.Identity!.Name!;
@@ -59,5 +61,31 @@ public class FollowingTimelineModel : PageModel
         await _authorRepository.DeleteFollowingAsync(followerId, followedId);
 
         return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
+    }
+
+    public async Task<IActionResult> OnPostCommentAsync(int cheepId, string commentText, int? pageIndex)
+    {
+        if (!User.Identity?.IsAuthenticated ?? true)
+            return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
+
+        if (string.IsNullOrWhiteSpace(commentText))
+            return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
+
+        var authorName = User.Identity.Name!;
+        await _commentRepository.CreateCommentAsync(new Core.Models.CommentDTO
+        {
+            Text = commentText,
+            AuthorName = authorName,
+            CheepId = cheepId,
+            TimeStamp = DateTime.UtcNow
+        });
+
+        return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
+    }
+
+    public async Task<IActionResult> OnGetCommentsAsync(int cheepId)
+    {
+        var comments = await _commentRepository.GetCommentsByCheepIdAsync(cheepId);
+        return new JsonResult(comments);
     }
 }
