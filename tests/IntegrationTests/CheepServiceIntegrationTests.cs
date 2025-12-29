@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using FluentAssertions;
 using Chirp.Core.Models;
 using Chirp.Infrastructure;
+using Chirp.Infrastructure.Repositories;
 
 
 namespace IntegrationTests;
@@ -126,4 +127,61 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
         content.Should().Contain("Cheep from Alice");
         content.Should().NotContain("Cheep from Bob");
     }
+
+	[Fact]
+	public async Task UserFollowFunction()
+	{
+		// ARRANGE: set up data
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+
+		// Create authors
+			var alice = new Author { Name = "alice", Email = "alice@test.com"};
+			var bob = new Author { Name = "bob", Email = "bob@test.com"};
+			var charlie = new Author { Name = "charlie", Email = "charlie@test.com"};
+			db.Authors.AddRange(alice, bob, charlie);
+			await db.SaveChangesAsync();
+
+		// bob follows charlie
+			await authorRepo.CreateFollowingAsync(bob.AuthorId, charlie.AuthorId);
+
+		// create cheeps for both
+			var bobCheep = new Cheep{ AuthorId = bob.AuthorId, Text = "Bob's test cheep", TimeStamp = DateTime.UtcNow };
+			var charlieCheep = new Cheep{ AuthorId = charlie.AuthorId, Text = "Charlie's test cheep", TimeStamp = DateTime.UtcNow };
+			db.Cheeps.AddRange(bobCheep, charlieCheep);
+			await db.SaveChangesAsync();
+		}
+		
+		// ACT: make sure Alice follows Bob and Charlie
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+
+			var alice = db.Authors.First(a => a.Name == "alice");
+			var bob = db.Authors.First(a => a.Name == "bob");
+			var charlie = db.Authors.First(a => a.Name == "charlie");
+
+			await authorRepo.CreateFollowingAsync(alice.AuthorId, bob.AuthorId);
+			await authorRepo.CreateFollowingAsync(alice.AuthorId, charlie.AuthorId);
+		}
+
+		// ASSERT: verify Alice follows both
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+
+			var alice = db.Authors.First(a => a.Name == "alice");
+			var bob = db.Authors.First(a => a.Name == "bob");
+			var charlie = db.Authors.First(a => a.Name == "charlie");
+
+			var followings = db.Followings.Where(f => f.FollowerId == alice.AuthorId).ToList();
+
+			followings.Should().HaveCount(2);
+			followings.Should().Contain(f => f.FollowedId == bob.AuthorId);
+			followings.Should().Contain(f => f.FollowedId == charlie.AuthorId);
+		}
+	}
 }
