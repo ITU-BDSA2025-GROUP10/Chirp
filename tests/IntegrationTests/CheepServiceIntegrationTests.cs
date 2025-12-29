@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using FluentAssertions;
 using Chirp.Core.Models;
 using Chirp.Infrastructure;
@@ -433,6 +434,109 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			var alicePage0 = service.GetCheepsFromAuthor("alice", page: 0);
 			alicePage0.Should().HaveCount(32);
 			alicePage0.Should().OnlyContain(c => c.Author == "alice");
+		}
+	}
+
+	[Fact]
+	public async Task CascadeDelete_RemovesAuthorAndRelatedDataCorrectly()
+	{
+		// Clear database to ensure test isolation
+		await ClearDatabaseAsync();
+
+		int aliceId, bobId, charlieId;
+
+		// ARRANGE: Create authors with cheeps and following relationships
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+
+			// Create three authors
+			var alice = new Author { Name = "alice", Email = "alice@test.com" };
+			var bob = new Author { Name = "bob", Email = "bob@test.com" };
+			var charlie = new Author { Name = "charlie", Email = "charlie@test.com" };
+			db.Authors.AddRange(alice, bob, charlie);
+			await db.SaveChangesAsync();
+
+			aliceId = alice.AuthorId;
+			bobId = bob.AuthorId;
+			charlieId = charlie.AuthorId;
+
+			// Create following relationships: Alice follows Bob, Bob follows Charlie
+			await authorRepo.CreateFollowingAsync(aliceId, bobId);
+			await authorRepo.CreateFollowingAsync(bobId, charlieId);
+
+			// Each author creates cheeps
+			var aliceCheep = new Cheep
+			{
+				AuthorId = aliceId,
+				Text = "Alice's cheep",
+				TimeStamp = DateTime.UtcNow
+			};
+			var bobCheep = new Cheep
+			{
+				AuthorId = bobId,
+				Text = "Bob's cheep",
+				TimeStamp = DateTime.UtcNow
+			};
+			var charlieCheep = new Cheep
+			{
+				AuthorId = charlieId,
+				Text = "Charlie's cheep",
+				TimeStamp = DateTime.UtcNow
+			};
+			db.Cheeps.AddRange(aliceCheep, bobCheep, charlieCheep);
+			await db.SaveChangesAsync();
+		}
+
+		// ACT: Delete Bob (who has cheeps, follows Charlie, and is followed by Alice)
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+			await authorRepo.DeleteAuthorAsync(bobId);
+		}
+
+		// ASSERT: Verify cascade delete worked correctly
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+
+			// Bob should be deleted
+			var bobExists = await db.Authors.AnyAsync(a => a.AuthorId == bobId);
+			bobExists.Should().BeFalse();
+
+			// Bob's cheeps should be deleted
+			var bobCheepsExist = await db.Cheeps.AnyAsync(c => c.AuthorId == bobId);
+			bobCheepsExist.Should().BeFalse();
+
+			// Bob's following relationships should be deleted (Alice -> Bob and Bob -> Charlie)
+			var aliceToBobFollowing = await db.Followings
+				.AnyAsync(f => f.FollowerId == aliceId && f.FollowedId == bobId);
+			aliceToBobFollowing.Should().BeFalse();
+
+			var bobToCharlieFollowing = await db.Followings
+				.AnyAsync(f => f.FollowerId == bobId && f.FollowedId == charlieId);
+			bobToCharlieFollowing.Should().BeFalse();
+
+			// Alice and Charlie should still exist with their cheeps
+			var aliceExists = await db.Authors.AnyAsync(a => a.AuthorId == aliceId);
+			aliceExists.Should().BeTrue();
+
+			var charlieExists = await db.Authors.AnyAsync(a => a.AuthorId == charlieId);
+			charlieExists.Should().BeTrue();
+
+			var aliceCheepExists = await db.Cheeps.AnyAsync(c => c.AuthorId == aliceId);
+			aliceCheepExists.Should().BeTrue();
+
+			var charlieCheepExists = await db.Cheeps.AnyAsync(c => c.AuthorId == charlieId);
+			charlieCheepExists.Should().BeTrue();
+
+			// Total count should be 2 authors and 2 cheeps
+			var authorCount = await db.Authors.CountAsync();
+			authorCount.Should().Be(2);
+
+			var cheepCount = await db.Cheeps.CountAsync();
+			cheepCount.Should().Be(2);
 		}
 	}
 }
