@@ -45,11 +45,10 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock)
+        UrlEncoder encoder)
+        : base(options, logger, encoder)
     {
     }
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         // Get test user from request headers
