@@ -5,6 +5,7 @@ using FluentAssertions;
 using Chirp.Core.Models;
 using Chirp.Infrastructure;
 using Chirp.Infrastructure.Repositories;
+using Chirp.Infrastructure.Service;
 
 
 namespace IntegrationTests;
@@ -16,6 +17,19 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
     public CheepServiceIntegrationTests(CustomWebApplicationFactory factory)
     {
         _factory = factory;
+    }
+
+    // Helper method to clear the database before each test
+    private async Task ClearDatabaseAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+
+        // Remove all data
+        db.Followings.RemoveRange(db.Followings);
+        db.Cheeps.RemoveRange(db.Cheeps);
+        db.Authors.RemoveRange(db.Authors);
+        await db.SaveChangesAsync();
     }
 
     // Baseline test to see that integration test setup works
@@ -182,6 +196,189 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			followings.Should().HaveCount(2);
 			followings.Should().Contain(f => f.FollowedId == bob.AuthorId);
 			followings.Should().Contain(f => f.FollowedId == charlie.AuthorId);
+		}
+	}
+
+	[Fact]
+	public async Task FollowingTimeline_IntegratesMultipleRepositoriesAndService()
+	{
+		// Clear database to ensure test isolation
+		await ClearDatabaseAsync();
+
+		// ARRANGE: Set up a scenario with multiple authors and following relationships
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+
+			// Create three authors
+			var alice = new Author { Name = "alice", Email = "alice@test.com" };
+			var bob = new Author { Name = "bob", Email = "bob@test.com" };
+			var charlie = new Author { Name = "charlie", Email = "charlie@test.com" };
+			db.Authors.AddRange(alice, bob, charlie);
+			await db.SaveChangesAsync();
+
+			// Alice follows Bob, but NOT Charlie
+			await authorRepo.CreateFollowingAsync(alice.AuthorId, bob.AuthorId);
+
+			// All three create cheeps at different times
+			var aliceCheep = new Cheep
+			{
+				AuthorId = alice.AuthorId,
+				Text = "Alice's cheep",
+				TimeStamp = DateTime.UtcNow.AddMinutes(-2)
+			};
+			var bobCheep = new Cheep
+			{
+				AuthorId = bob.AuthorId,
+				Text = "Bob's cheep",
+				TimeStamp = DateTime.UtcNow.AddMinutes(-1)
+			};
+			var charlieCheep = new Cheep
+			{
+				AuthorId = charlie.AuthorId,
+				Text = "Charlie's cheep",
+				TimeStamp = DateTime.UtcNow
+			};
+			db.Cheeps.AddRange(aliceCheep, bobCheep, charlieCheep);
+			await db.SaveChangesAsync();
+		}
+
+		// ACT: Use CheepService to get Alice's following timeline
+		// This integrates AuthorRepository (to get followed IDs) + CheepRepository (to get cheeps) + CheepService
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var service = scope.ServiceProvider.GetRequiredService<ICheepService>();
+
+			var timeline = service.GetCheepsFromFollowing("alice");
+
+			// ASSERT: Alice should ONLY see Bob's cheeps (because she follows him)
+			// GetCheepsFromFollowing only returns followed authors' cheeps, NOT your own
+			timeline.Should().NotBeNull();
+			timeline.Should().HaveCount(1);
+			timeline.Should().Contain(c => c.Cheep == "Bob's cheep");
+			timeline.Should().NotContain(c => c.Cheep == "Alice's cheep"); // Own cheeps NOT included
+			timeline.Should().NotContain(c => c.Cheep == "Charlie's cheep"); // Not following Charlie
+
+			// Verify the Author property and isFollowed flag
+			timeline.First().Author.Should().Be("bob");
+			timeline.First().isFollowed.Should().BeTrue(); // Bob is followed by Alice
+		}
+	}
+
+    [Fact]
+    public async Task UserUnFollowFunction()
+    {
+        //
+    }
+
+	[Fact]
+	public async Task CheepService_CreateAndRead_IntegratesRepositoryAndDatabase()
+	{
+		// Clear database to ensure test isolation
+		await ClearDatabaseAsync();
+
+		// ARRANGE: Create authors directly in the database
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+
+			var alice = new Author { Name = "alice", Email = "alice@test.com" };
+			var bob = new Author { Name = "bob", Email = "bob@test.com" };
+			db.Authors.AddRange(alice, bob);
+			await db.SaveChangesAsync();
+		}
+
+		// ACT: Use CheepService to create cheeps
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var service = scope.ServiceProvider.GetRequiredService<ICheepService>();
+
+			await service.CreateCheepAsync("alice", "Alice's first cheep");
+			await service.CreateCheepAsync("bob", "Bob's first cheep");
+			await service.CreateCheepAsync("alice", "Alice's second cheep");
+		}
+
+		// ASSERT: Read cheeps through service and verify integration
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var service = scope.ServiceProvider.GetRequiredService<ICheepService>();
+
+			// Test GetCheeps (public timeline)
+			var allCheeps = service.GetCheeps(page: 0, pageSize: 32);
+			allCheeps.Should().NotBeNull();
+			allCheeps.Should().HaveCount(3);
+			allCheeps.Should().Contain(c => c.Author == "alice" && c.Cheep == "Alice's first cheep");
+			allCheeps.Should().Contain(c => c.Author == "bob" && c.Cheep == "Bob's first cheep");
+			allCheeps.Should().Contain(c => c.Author == "alice" && c.Cheep == "Alice's second cheep");
+
+			// Test GetCheepsFromAuthor (author timeline)
+			var aliceCheeps = service.GetCheepsFromAuthor("alice", page: 0, pageSize: 32);
+			aliceCheeps.Should().NotBeNull();
+			aliceCheeps.Should().HaveCount(2);
+			aliceCheeps.Should().OnlyContain(c => c.Author == "alice");
+			aliceCheeps.Should().Contain(c => c.Cheep == "Alice's first cheep");
+			aliceCheeps.Should().Contain(c => c.Cheep == "Alice's second cheep");
+
+			var bobCheeps = service.GetCheepsFromAuthor("bob", page: 0, pageSize: 32);
+			bobCheeps.Should().NotBeNull();
+			bobCheeps.Should().HaveCount(1);
+			bobCheeps.Should().OnlyContain(c => c.Author == "bob");
+			bobCheeps.First().Cheep.Should().Be("Bob's first cheep");
+		}
+	}
+
+	[Fact]
+	public async Task Pagination_LimitsPageSizeTo32Cheeps()
+	{
+		// Clear database to ensure test isolation
+		await ClearDatabaseAsync();
+
+		// ARRANGE: Create an author and many cheeps (more than 32)
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+			var service = scope.ServiceProvider.GetRequiredService<ICheepService>();
+
+			var alice = new Author { Name = "alice", Email = "alice@test.com" };
+			db.Authors.Add(alice);
+			await db.SaveChangesAsync();
+
+			// Create 50 cheeps (more than one page of 32)
+			for (int i = 1; i <= 50; i++)
+			{
+				await service.CreateCheepAsync("alice", $"Cheep number {i}");
+				// Small delay to ensure different timestamps
+				await Task.Delay(1);
+			}
+		}
+
+		// ACT & ASSERT: Test pagination with default page size of 32
+		using (var scope = _factory.Services.CreateScope())
+		{
+			var service = scope.ServiceProvider.GetRequiredService<ICheepService>();
+
+			// Page 0 should have exactly 32 cheeps (the page limit)
+			var page0 = service.GetCheeps(page: 0);
+			page0.Should().NotBeNull();
+			page0.Should().HaveCount(32);
+			page0.Should().OnlyContain(c => c.Author == "alice");
+
+			// Page 1 should have the remaining 18 cheeps
+			var page1 = service.GetCheeps(page: 1);
+			page1.Should().NotBeNull();
+			page1.Should().HaveCount(18);
+			page1.Should().OnlyContain(c => c.Author == "alice");
+
+			// Verify pages don't overlap
+			var page0Ids = page0.Select(c => c.Id).ToList();
+			var page1Ids = page1.Select(c => c.Id).ToList();
+			page0Ids.Should().NotIntersectWith(page1Ids);
+
+			// Verify pagination with author timeline also respects 32 limit
+			var alicePage0 = service.GetCheepsFromAuthor("alice", page: 0);
+			alicePage0.Should().HaveCount(32);
+			alicePage0.Should().OnlyContain(c => c.Author == "alice");
 		}
 	}
 }

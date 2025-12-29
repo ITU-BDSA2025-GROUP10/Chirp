@@ -39,18 +39,23 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 var app = builder.Build();
 
-// Ensure DB is migrated and seeded in ALL environments
+// Ensure DB is migrated and seeded (skip for in-memory test databases)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ChatDBContext>();
 
-    // 1) Create DB if needed + apply all migrations
-    context.Database.Migrate();
-    context.Database.EnsureCreated();
+    // Only migrate if this is NOT an in-memory SQLite database (tests use DataSource=:memory:)
+    var connectionString = context.Database.GetConnectionString() ?? "";
+    if (!connectionString.Contains(":memory:", StringComparison.OrdinalIgnoreCase))
+    {
+        // 1) Create DB if needed + apply all migrations
+        context.Database.Migrate();
+        context.Database.EnsureCreated();
 
-    // 2) Seed data (make sure DbInitializer.SeedDatabase is idempotent)
-    DbInitializer.SeedDatabase(context);
+        // 2) Seed data (make sure DbInitializer.SeedDatabase is idempotent)
+        DbInitializer.SeedDatabase(context);
+    }
 }
 
 if (app.Environment.IsDevelopment())
@@ -91,4 +96,5 @@ app.MapRazorPages();
 
 app.Run();
 
+// makes the program class available in our integration tests
 public partial class Program {}
