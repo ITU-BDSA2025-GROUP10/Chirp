@@ -123,10 +123,8 @@ namespace Chirp.Web.Pages
 
             await LoadUserDataAsync(user);
 
-            // Generate zip archive with user data
             var zipBytes = GenerateDataArchive();
 
-            // Return zip file for download
             var fileName = $"chirp-data-{UserName}-{DateTime.UtcNow:yyyyMMddHHmmss}.zip";
             return File(zipBytes, "application/zip", fileName);
         }
@@ -136,7 +134,6 @@ namespace Chirp.Web.Pages
             using var memoryStream = new MemoryStream();
             using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
             {
-                // 1. Personal Information (CSV)
                 var profileEntry = archive.CreateEntry("personal_info.csv");
                 using (var entryStream = profileEntry.Open())
                 using (var writer = new StreamWriter(entryStream, Encoding.UTF8))
@@ -146,7 +143,6 @@ namespace Chirp.Web.Pages
                     writer.WriteLine($"Email,\"{Email}\"");
                 }
 
-                // 2. Following List (CSV)
                 var followingEntry = archive.CreateEntry("following.csv");
                 using (var entryStream = followingEntry.Open())
                 using (var writer = new StreamWriter(entryStream, Encoding.UTF8))
@@ -158,7 +154,6 @@ namespace Chirp.Web.Pages
                     }
                 }
 
-                // 3. Cheeps List (CSV)
                 var cheepsEntry = archive.CreateEntry("cheeps.csv");
                 using (var entryStream = cheepsEntry.Open())
                 using (var writer = new StreamWriter(entryStream, Encoding.UTF8))

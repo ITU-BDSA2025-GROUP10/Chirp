@@ -36,13 +36,11 @@ public class CommentRepository : ICommentRepository
 
     public async Task CreateCommentAsync(CommentDTO comment)
     {
-        // Search by Email first (since AuthorName might contain email from OAuth)
         var author = await _context.Authors
             .FirstOrDefaultAsync(a => a.Email == comment.AuthorName || a.Name == comment.AuthorName);
 
         if (author == null)
         {
-            // If author doesn't exist, create one (this matches the pattern in CheepRepository)
             author = new Author
             {
                 Name = comment.AuthorName,

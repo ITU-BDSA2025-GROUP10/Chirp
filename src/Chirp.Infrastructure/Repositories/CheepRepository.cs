@@ -13,7 +13,6 @@ public class CheepRepository : ICheepRepository
         _db = db;
     }
 
-    // READ + paging
     public async Task<List<CheepDTO>> ReadCheepsAsync(string? author = null, int page = 0, int pageSize = 32)
     {
         var q = _db.Cheeps
@@ -42,7 +41,6 @@ public class CheepRepository : ICheepRepository
         return items;
     }
 
-    // READ cheeps from specific author IDs (for following feed)
     public async Task<List<CheepDTO>> ReadCheepsFromAuthorIdsAsync(List<int> authorIds, int page = 0, int pageSize = 32)
     {
         if (authorIds == null || authorIds.Count == 0)
@@ -70,7 +68,6 @@ public class CheepRepository : ICheepRepository
         return items;
     }
 
-    // CREATE (find-or-create Author, insert Cheep)
     public async Task<int> CreateCheepAsync(CheepDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Author))
@@ -78,7 +75,6 @@ public class CheepRepository : ICheepRepository
         if (string.IsNullOrWhiteSpace(dto.Text))
             throw new ArgumentException("Text is required.", nameof(dto.Text));
 
-        // find or create the author
         var author = await _db.Authors.FirstOrDefaultAsync(u => u.Name == dto.Author);
         if (author is null)
         {
@@ -100,20 +96,17 @@ public class CheepRepository : ICheepRepository
         return msg.CheepId;
     }
 
-    // UPDATE (update Cheep text; keep it simple for now)
     public async Task UpdateCheepAsync(CheepDTO dto)
     {
         var msg = await _db.Cheeps.FirstOrDefaultAsync(m => m.CheepId == dto.Id);
         if (msg is null) return; // or throw KeyNotFoundException
 
-        // For the slides, just update text. (You can extend later.)
         if (!string.IsNullOrWhiteSpace(dto.Text))
             msg.Text = dto.Text;
 
         await _db.SaveChangesAsync();
     }
 
-    // DELETE
     public async Task DeleteCheepAsync(int id)
     {
         var msg = await _db.Cheeps.FirstOrDefaultAsync(m => m.CheepId == id);

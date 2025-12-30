@@ -10,10 +10,8 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Razor
 builder.Services.AddRazorPages();
 
-// EF Core: read connection string and register DbContext
 var conn = builder.Configuration.GetConnectionString("DefaultConnection")
            ?? "Data Source=Chat.db"; // fallback
 builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn));
@@ -21,17 +19,15 @@ builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn))
 builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn.RequireConfirmedAccount = true)
 .AddEntityFrameworkStores<ChatDBContext>();
 
-//github login
 
 builder.Services.AddAuthentication()
     .AddGitHub(options =>
     {
         options.ClientId = builder.Configuration["Authentication:GitHub:ClientID"];
         options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
-        options.CallbackPath = "/signin-github"; // optional, this is the default
+        options.CallbackPath = "/signin-github"; 
     });
 
-// Your service (scoped is typical since DbContext is scoped)
 builder.Services.AddScoped<ICheepService, CheepService>();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
@@ -39,21 +35,17 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 var app = builder.Build();
 
-// Ensure DB is migrated and seeded (skip for in-memory test databases)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ChatDBContext>();
 
-    // Only migrate if this is NOT an in-memory SQLite database (tests use DataSource=:memory:)
     var connectionString = context.Database.GetConnectionString() ?? "";
     if (!connectionString.Contains(":memory:", StringComparison.OrdinalIgnoreCase))
     {
-        // 1) Create DB if needed + apply all migrations
         context.Database.Migrate();
         context.Database.EnsureCreated();
 
-        // 2) Seed data (make sure DbInitializer.SeedDatabase is idempotent)
         DbInitializer.SeedDatabase(context);
     }
 }
@@ -77,11 +69,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -96,5 +86,4 @@ app.MapRazorPages();
 
 app.Run();
 
-// makes the program class available in our integration tests
 public partial class Program {}

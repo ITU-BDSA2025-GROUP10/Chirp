@@ -9,7 +9,6 @@ public class Cheep
     public required string Text { get; set; } = null!;
     public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
-    // FK + navigation to Author (author)
     public int AuthorId { get; set; }
     public Author Author { get; set; } = null!;
     
