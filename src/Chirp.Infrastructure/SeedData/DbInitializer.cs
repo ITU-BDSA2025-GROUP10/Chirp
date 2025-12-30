@@ -699,6 +699,14 @@ public static class DbInitializer
             chatContext.Authors.AddRange(Authors);
             chatContext.Cheeps.AddRange(Cheeps);
             chatContext.SaveChanges();
+
+            // Normalize UserName and Email for all seeded authors so Identity can find them
+            foreach (var author in Authors)
+            {
+                author.NormalizedUserName = userManager.NormalizeName(author.UserName);
+                author.NormalizedEmail = userManager.NormalizeEmail(author.Email);
+            }
+            chatContext.SaveChanges();
         }
     }
 }
