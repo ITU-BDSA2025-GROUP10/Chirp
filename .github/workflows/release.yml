@@ -44,8 +44,10 @@ jobs:
       - name: restore dependencies
         run: dotnet restore
 
-      - name: Test
-        run: dotnet test --configuration Release --verbosity normal
+      - name: Test (Unit Tests)
+        run: dotnet test tests/unitTests/unitTests.csproj --no-build --verbosity normal
+      - name: Test (Integration Tests)
+        run: dotnet test tests/IntegrationTests/IntegrationTests.csproj --no-build --verbosity normal
 
   prepRelease:
     name: prepare GitHub Release
