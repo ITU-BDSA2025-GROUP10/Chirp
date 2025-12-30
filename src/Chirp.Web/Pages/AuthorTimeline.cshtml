@@ -51,15 +51,12 @@
             }
         }
 
-        // Load comments for a specific cheep
         async function loadComments(cheepId) {
             const commentsList = document.getElementById(`comments-list-${cheepId}`);
 
-            // Check if already loaded
             if (commentsList.dataset.loaded === 'true') return;
 
             try {
-                // Fetch comments from the server using Razor Pages handler
                 const response = await fetch(`?handler=Comments&cheepId=${cheepId}`);
                 if (!response.ok) {
                     commentsList.innerHTML = '<p style="color: #888; font-size: 12px;">Unable to load comments.</p>';
@@ -100,7 +97,6 @@
                     <br>
                     <small>&mdash; @cheep.Timestamp</small>
 
-                    <!-- Comment Section -->
                     <div class="comment-section">
                         <button class="comment-toggle" onclick="toggleComments(@cheep.Id); return false;">
                             <span class="comment-count">@cheep.CommentCount comment@(cheep.CommentCount != 1 ? "s" : "")</span>
@@ -119,7 +115,6 @@
                             }
 
                             <div id="comments-list-@cheep.Id" class="comments-list">
-                                <!-- Comments will be loaded here -->
                             </div>
                         </div>
                     </div>

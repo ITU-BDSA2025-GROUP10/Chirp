@@ -2,15 +2,15 @@ namespace Chirp.Core.Models;
 
 public class Author
 {
-    public int AuthorId { get; set; }            // PK (EF recognizes *Id)
+    public int AuthorId { get; set; }           
     public string Name { get; set; } = null!;
 
-    public string? DisplayName { get; set; }   // NEW for Step 6
-    public string? Email { get; set; }          // optional, you can add later with a migration
+    public string? DisplayName { get; set; } 
+    public string? Email { get; set; }          
     
-    public List<Following> Following { get; set; } = null!; // List of which authors is the user following
+    public List<Following> Following { get; set; } = null!; 
     
-    public List<Following> Followers { get; set; } = null!; // List of who is following the user
+    public List<Following> Followers { get; set; } = null!; 
 
 
     // Navigation

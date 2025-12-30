@@ -12,8 +12,6 @@ public class AuthorRepository : IAuthorRepository
         _db = db;
     }
     
-    // Return the id of the author with that name
-    //TODO (What if more than one author has the same name? Maybe return a list instead?)
     public async Task<int> getAuthorByNameAsync(string name)
     {
         var author = await _db.Authors
@@ -71,18 +69,14 @@ public class AuthorRepository : IAuthorRepository
             throw new KeyNotFoundException($"Author with id {id} does not exist");
         }
 
-        // Manually delete Following relationships (NoAction behavior)
         _db.Followings.RemoveRange(author.Following);
         _db.Followings.RemoveRange(author.Followers);
 
-        // Delete all comments by this author
         var comments = await _db.Comments
             .Where(c => c.AuthorId == id)
             .ToListAsync();
         _db.Comments.RemoveRange(comments);
 
-        // Cheeps will cascade delete (along with their comments)
-        // Now delete the author
         _db.Authors.Remove(author);
 
         await _db.SaveChangesAsync();
@@ -95,10 +89,8 @@ public class AuthorRepository : IAuthorRepository
     }
     
     // Create list of whom the user is following
-    // Create relation: followerId follows followedId
     public async Task CreateFollowingAsync(int followerId, int followedId)
     {
-        // Optional: validate both authors exist
         var followerExists = await _db.Authors.AnyAsync(a => a.AuthorId == followerId);
         var followedExists = await _db.Authors.AnyAsync(a => a.AuthorId == followedId);
 
@@ -107,19 +99,17 @@ public class AuthorRepository : IAuthorRepository
             throw new KeyNotFoundException("Follower or followed author does not exist");
         }
 
-        // Prevent user from following themselves
         if (followerId == followedId)
         {
             return;
         }
 
-        // Avoid duplicates
         var alreadyFollowing = await _db.Followings.AnyAsync(f =>
             f.FollowerId == followerId && f.FollowedId == followedId);
 
         if (alreadyFollowing)
         {
-            return; // can be thrown if not necessary
+            return; 
         }
 
         var following = new Following

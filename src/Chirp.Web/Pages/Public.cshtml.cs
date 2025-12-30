@@ -30,11 +30,9 @@ public class PublicModel : PageModel
         
         if (!User.Identity?.IsAuthenticated ?? true)
         {
-           // Console.WriteLine("User not authenticated");
             return RedirectToPage();
         }
         
-        // Create the cheep
         await _service.CreateCheepAsync(User.Identity.Name!, Text);
 
         // Redirect back to the page (so the new cheep shows up)
@@ -68,12 +66,10 @@ public class PublicModel : PageModel
             followerId = await _authorRepository.createAuthorAsync(email, email);
         }
 
-        // follow logic here:
 
         var followedId = await _authorRepository.getAuthorByNameAsync(author);
         await _authorRepository.CreateFollowingAsync(followerId, followedId);
 
-        // Redirect so OnGet runs and fills Cheeps
         return RedirectToPage(new { pageIndex = pageIndex ?? 1 });
     }
 

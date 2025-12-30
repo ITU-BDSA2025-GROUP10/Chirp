@@ -12,7 +12,6 @@ public class FollowingTimelineModel : PageModel
     private readonly ICommentRepository _commentRepository;
     private const int PageSize = 32;
 
-    // Use the view model, not CheepDTO
     public List<CheepViewModel> Cheeps { get; private set; } = new();
 
     [BindProperty(SupportsGet = true)]
@@ -24,8 +23,6 @@ public class FollowingTimelineModel : PageModel
         _authorRepository = authorRepository;
         _commentRepository = commentRepository;
     }
-
-    // Service API is synchronous, so this is synchronous too
     public void OnGet()
     {
         var userName = User.Identity?.Name;

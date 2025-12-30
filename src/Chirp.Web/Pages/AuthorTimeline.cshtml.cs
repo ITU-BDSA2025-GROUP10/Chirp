@@ -31,10 +31,8 @@ public class AuthorTimelineModel : PageModel
         }
 
 
-        // Create the cheep
         await _service.CreateCheepAsync(User.Identity.Name!, Text);
 
-        // Redirect back to the page (so the new cheep shows up)
         return RedirectToPage();
     }
 
