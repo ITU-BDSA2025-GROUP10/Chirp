@@ -16,11 +16,9 @@ public static class LoginHelper
         // Fill credentials
         await page.FillAsync("input[name='Input.Email']", email);
         await page.FillAsync("input[name='Input.Password']", password);
-
-        // Click the login button by TEXT (not type/id)
+        
         await page.ClickAsync("button:has-text('Log in')");
-
-        // 🔑 THIS is the key: wait for navigation menu change
+        
         await page.WaitForSelectorAsync("text=my timeline");
     }
 }

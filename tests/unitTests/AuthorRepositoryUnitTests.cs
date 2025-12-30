@@ -21,7 +21,6 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     //  CREATING AUTHOR
-
     [Fact]
     public async Task CreateAuthorAsync_CreatesAuthor_AndReturnsId()
     {
@@ -41,7 +40,6 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
     }
 
     //  GET AUTHOR BY NAME
-
     [Fact]
     public async Task GetAuthorByNameAsync_ReturnsCorrectId_WhenExists()
     {
@@ -61,6 +59,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         result.Should().Be(id);
     }
 
+    //Check for error when not found
     [Fact]
     public async Task GetAuthorByNameAsync_Throws_WhenNotFound()
     {
@@ -95,6 +94,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         result.Should().Be(id);
     }
 
+    //Check for error 
     [Fact]
     public async Task GetAuthorByEmailAsync_Throws_WhenNotFound()
     {
@@ -196,14 +196,14 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         await using var ctx = _fx.CreateContext();
         var repo = new AuthorRepository(ctx);
 
-        // Should NOT throw
+        
         await repo.CreateFollowingAsync(followerId, followedId);
 
         await using var verify = _fx.CreateContext();
         var count = await verify.Followings.CountAsync(f =>
             f.FollowerId == followerId && f.FollowedId == followedId);
 
-        count.Should().Be(1);  // no duplicate added
+        count.Should().Be(1); 
     }
 
     //  DELETE FOLLOWING RELATIONSHIP
@@ -256,7 +256,6 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         await using var ctx = _fx.CreateContext();
         var repo = new AuthorRepository(ctx);
 
-        // Should NOT throw - silently succeeds
         Func<Task> act = async () => await repo.DeleteFollowingAsync(followerId, followedId);
 
         await act.Should().NotThrowAsync();
@@ -268,7 +267,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         await using var ctx = _fx.CreateContext();
         var repo = new AuthorRepository(ctx);
 
-        // Should NOT throw - silently succeeds
+        
         Func<Task> act = async () => await repo.DeleteFollowingAsync(9999, 8888);
 
         await act.Should().NotThrowAsync();
@@ -363,8 +362,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
             aliceId = alice.AuthorId;
             bobId = bob.AuthorId;
             charlieId = charlie.AuthorId;
-
-            // Alice follows both Bob and Charlie
+            
             seed.Followings.AddRange(
                 new Following { FollowerId = aliceId, FollowedId = bobId },
                 new Following { FollowerId = aliceId, FollowedId = charlieId }

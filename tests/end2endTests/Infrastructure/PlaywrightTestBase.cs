@@ -21,7 +21,7 @@ public abstract class PlaywrightTestBase : IAsyncLifetime
         TestEmail = config["TestUser:Email"]!;
         TestPassword = config["TestUser:Password"]!;
 
-        // Create test user via HTTP endpoint before starting browser tests
+        // Create test user via endpoint
         using var httpClient = new HttpClient();
         try
         {
@@ -29,8 +29,7 @@ public abstract class PlaywrightTestBase : IAsyncLifetime
         }
         catch
         {
-            // Ignore errors - endpoint might not exist or app might not be running yet
-            // The test will fail later with a clearer message if the app isn't running
+            // Ignore errors
         }
 
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();

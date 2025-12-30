@@ -6,9 +6,9 @@ public class LoginPageTests : PlaywrightTestBase
     public async Task Login_Page_Loads()
     {
         await Page.GotoAsync($"{BaseUrl}/Identity/Account/Login");
-
         await Page.WaitForSelectorAsync("form");
 
+        //assert that the loginpage is rendered
         var heading = await Page.Locator("h1").TextContentAsync();
         Assert.Contains("Log", heading, StringComparison.OrdinalIgnoreCase);
     }
