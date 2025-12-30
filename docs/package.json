@@ -1,0 +1,29 @@
+{
+  "name": "chirp",
+  "version": "1.0.0",
+  "description": "This project is licensed under the MIT License – see the [LICENSE](./LICENSE) file for details.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "toc": "doctoc report.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ITU-BDSA2025-GROUP10/Chirp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ITU-BDSA2025-GROUP10/Chirp/issues"
+  },
+  "homepage": "https://github.com/ITU-BDSA2025-GROUP10/Chirp#readme",
+  "devDependencies": {
+    "doctoc": "^2.2.1"
+  }
+}
