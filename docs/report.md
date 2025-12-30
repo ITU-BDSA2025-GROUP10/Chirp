@@ -17,7 +17,34 @@ Jogvan Andreas á Lad Jacobsen `<jogv@itu.dk>`
 ---
 
 # Table of Contents
-[TOC]
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [1. Design and Architecture](#1-design-and-architecture)
+  - [1.1 Domain Model](#11-domain-model)
+  - [1.2 Architecture — In the Small](#12-architecture--in-the-small)
+  - [1.3 Architecture of the Deployed Application](#13-architecture-of-the-deployed-application)
+  - [1.4 User Activities](#14-user-activities)
+      - [1.4.1 Activity diagram for unauthorized user](#141-activity-diagram-for-unauthorized-user)
+      - [1.4.2 Activity diagram for authenticated users](#142-activity-diagram-for-authenticated-users)
+  - [1.5 Sequence of Functionality / Calls Through Chirp!](#15-sequence-of-functionality--calls-through-chirp)
+      - [1.5.1 UML Sequence Diagram](#151-uml-sequence-diagram)
+- [2. Process](#2-process)
+  - [2.1 Build, Test, Release, and Deployment](#21-build-test-release-and-deployment)
+      - [2.1.1 GitHub Actions — Activity Diagram](#211-github-actions--activity-diagram)
+      - [2.1.2 Summary of CI/CD Execution](#212-summary-of-cicd-execution)
+  - [2.2 Team Work](#22-team-work)
+      - [2.2.1 Project Board Snapshot (Before Submission)](#221-project-board-snapshot-before-submission)
+  - [2.3 How to Make Chirp! Work Locally](#23-how-to-make-chirp-work-locally)
+  - [2.4 How to Run the Test Suite Locally](#24-how-to-run-the-test-suite-locally)
+      - [2.4.1 Execution Steps](#241-execution-steps)
+      - [2.4.2 Types of Tests & Purpose](#242-types-of-tests--purpose)
+- [3. Ethics](#3-ethics)
+  - [3.1 License](#31-license)
+  - [3.2 LLMs, ChatGPT, Copilot & AI Tools Used](#32-llms-chatgpt-copilot--ai-tools-used)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ---
 
