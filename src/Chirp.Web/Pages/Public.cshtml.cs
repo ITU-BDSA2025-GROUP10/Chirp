@@ -118,7 +118,7 @@ public class PublicModel : PageModel
         PageSize = _configuration?.GetValue<int>("PageSize", 32) ?? 32;
 
         var currentUser = User.Identity?.Name;
-        var items = _service.GetCheeps(currentUser, - 1, PageSize + 1);
+        var items = _service.GetCheeps(currentUser, page - 1, PageSize + 1);
 
         HasNextPage = items.Count > PageSize;
         HasPreviousPage = page > 1;
