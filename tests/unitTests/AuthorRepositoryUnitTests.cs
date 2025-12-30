@@ -32,10 +32,10 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         id.Should().BeGreaterThan(0);
 
         await using var verify = _fx.CreateContext();
-        var saved = await verify.Authors.FirstOrDefaultAsync(a => a.AuthorId == id);
+        var saved = await verify.Authors.FirstOrDefaultAsync(a => a.Id == id);
 
         saved.Should().NotBeNull();
-        saved!.Name.Should().Be("alice");
+        saved!.UserName.Should().Be("alice");
         saved.Email.Should().Be("alice@example.com");
     }
 
@@ -46,10 +46,10 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         int id;
         await using (var seed = _fx.CreateContext())
         {
-            var a = new Author { Name = "bob", Email = "b@b.com" };
+            var a = new Author { UserName = "bob", Email = "b@b.com" };
             seed.Authors.Add(a);
             await seed.SaveChangesAsync();
-            id = a.AuthorId;
+            id = a.Id;
         }
 
         await using var ctx = _fx.CreateContext();
@@ -81,10 +81,10 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         int id;
         await using (var seed = _fx.CreateContext())
         {
-            var a = new Author { Name = "eva", Email = "eva@example.com" };
+            var a = new Author { UserName = "eva", Email = "eva@example.com" };
             seed.Authors.Add(a);
             await seed.SaveChangesAsync();
-            id = a.AuthorId;
+            id = a.Id;
         }
 
         await using var ctx = _fx.CreateContext();
@@ -116,10 +116,10 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         int id;
         await using (var seed = _fx.CreateContext())
         {
-            var a = new Author { Name = "charlie", Email = "c@example.com" };
+            var a = new Author { UserName = "charlie", Email = "c@example.com" };
             seed.Authors.Add(a);
             await seed.SaveChangesAsync();
-            id = a.AuthorId;
+            id = a.Id;
         }
 
         await using var ctx = _fx.CreateContext();
@@ -128,7 +128,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         await repo.DeleteAuthorAsync(id);
 
         await using var verify = _fx.CreateContext();
-        var exists = await verify.Authors.AnyAsync(a => a.AuthorId == id);
+        var exists = await verify.Authors.AnyAsync(a => a.Id == id);
 
         exists.Should().BeFalse();
     }
@@ -142,12 +142,12 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var f = new Author { Name = "alice" };
-            var t = new Author { Name = "bob" };
+            var f = new Author { UserName = "alice" };
+            var t = new Author { UserName = "bob" };
             seed.Authors.AddRange(f, t);
             await seed.SaveChangesAsync();
-            followerId = f.AuthorId;
-            followedId = t.AuthorId;
+            followerId = f.Id;
+            followedId = t.Id;
         }
 
         await using var ctx = _fx.CreateContext();
@@ -182,12 +182,12 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var f = new Author { Name = "alice" };
-            var t = new Author { Name = "bob" };
+            var f = new Author { UserName = "alice" };
+            var t = new Author { UserName = "bob" };
             seed.Authors.AddRange(f, t);
             await seed.SaveChangesAsync();
-            followerId = f.AuthorId;
-            followedId = t.AuthorId;
+            followerId = f.Id;
+            followedId = t.Id;
 
             seed.Followings.Add(new Following { FollowerId = followerId, FollowedId = followedId });
             await seed.SaveChangesAsync();
@@ -215,12 +215,12 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var f = new Author { Name = "alice", Email = "alice@example.com" };
-            var t = new Author { Name = "bob", Email = "bob@example.com" };
+            var f = new Author { UserName = "alice", Email = "alice@example.com" };
+            var t = new Author { UserName = "bob", Email = "bob@example.com" };
             seed.Authors.AddRange(f, t);
             await seed.SaveChangesAsync();
-            followerId = f.AuthorId;
-            followedId = t.AuthorId;
+            followerId = f.Id;
+            followedId = t.Id;
 
             seed.Followings.Add(new Following { FollowerId = followerId, FollowedId = followedId });
             await seed.SaveChangesAsync();
@@ -245,12 +245,12 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var f = new Author { Name = "alice", Email = "alice@example.com" };
-            var t = new Author { Name = "bob", Email = "bob@example.com" };
+            var f = new Author { UserName = "alice", Email = "alice@example.com" };
+            var t = new Author { UserName = "bob", Email = "bob@example.com" };
             seed.Authors.AddRange(f, t);
             await seed.SaveChangesAsync();
-            followerId = f.AuthorId;
-            followedId = t.AuthorId;
+            followerId = f.Id;
+            followedId = t.Id;
         }
 
         await using var ctx = _fx.CreateContext();
@@ -282,15 +282,15 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var author = new Author { Name = "alice", Email = "alice@example.com" };
-            var followed1 = new Author { Name = "bob", Email = "bob@example.com" };
-            var followed2 = new Author { Name = "charlie", Email = "charlie@example.com" };
+            var author = new Author { UserName = "alice", Email = "alice@example.com" };
+            var followed1 = new Author { UserName = "bob", Email = "bob@example.com" };
+            var followed2 = new Author { UserName = "charlie", Email = "charlie@example.com" };
             seed.Authors.AddRange(author, followed1, followed2);
             await seed.SaveChangesAsync();
 
-            authorId = author.AuthorId;
-            followedId1 = followed1.AuthorId;
-            followedId2 = followed2.AuthorId;
+            authorId = author.Id;
+            followedId1 = followed1.Id;
+            followedId2 = followed2.Id;
 
             seed.Followings.AddRange(
                 new Following { FollowerId = authorId, FollowedId = followedId1 },
@@ -305,7 +305,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         var result = await repo.GetAuthorWithFollowingAsync(authorId);
 
         result.Should().NotBeNull();
-        result!.Name.Should().Be("alice");
+        result!.UserName.Should().Be("alice");
         result.Following.Should().HaveCount(2);
         result.Following.Should().Contain(f => f.FollowedId == followedId1);
         result.Following.Should().Contain(f => f.FollowedId == followedId2);
@@ -319,10 +319,10 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var author = new Author { Name = "alice", Email = "alice@example.com" };
+            var author = new Author { UserName = "alice", Email = "alice@example.com" };
             seed.Authors.Add(author);
             await seed.SaveChangesAsync();
-            authorId = author.AuthorId;
+            authorId = author.Id;
         }
 
         await using var ctx = _fx.CreateContext();
@@ -331,7 +331,7 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
         var result = await repo.GetAuthorWithFollowingAsync(authorId);
 
         result.Should().NotBeNull();
-        result!.Name.Should().Be("alice");
+        result!.UserName.Should().Be("alice");
         result.Following.Should().BeEmpty();
     }
 
@@ -353,15 +353,15 @@ public class AuthorRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var alice = new Author { Name = "alice", Email = "alice@example.com" };
-            var bob = new Author { Name = "bob", Email = "bob@example.com" };
-            var charlie = new Author { Name = "charlie", Email = "charlie@example.com" };
+            var alice = new Author { UserName = "alice", Email = "alice@example.com" };
+            var bob = new Author { UserName = "bob", Email = "bob@example.com" };
+            var charlie = new Author { UserName = "charlie", Email = "charlie@example.com" };
             seed.Authors.AddRange(alice, bob, charlie);
             await seed.SaveChangesAsync();
 
-            aliceId = alice.AuthorId;
-            bobId = bob.AuthorId;
-            charlieId = charlie.AuthorId;
+            aliceId = alice.Id;
+            bobId = bob.Id;
+            charlieId = charlie.Id;
             
             seed.Followings.AddRange(
                 new Following { FollowerId = aliceId, FollowedId = bobId },

@@ -16,7 +16,7 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection")
            ?? "Data Source=Chat.db"; // fallback
 builder.Services.AddDbContext<ChatDBContext>(options => options.UseSqlite(conn));
 
-builder.Services.AddDefaultIdentity<ApplicationAuthor>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<Author>(options => options.SignIn.RequireConfirmedAccount = true)
 .AddEntityFrameworkStores<ChatDBContext>();
 
 
@@ -39,6 +39,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ChatDBContext>();
+    var userManager = services.GetRequiredService<UserManager<Author>>();
 
     var connectionString = context.Database.GetConnectionString() ?? "";
     if (!connectionString.Contains(":memory:", StringComparison.OrdinalIgnoreCase))
@@ -46,18 +47,18 @@ using (var scope = app.Services.CreateScope())
         context.Database.Migrate();
         context.Database.EnsureCreated();
 
-        DbInitializer.SeedDatabase(context);
+        DbInitializer.SeedDatabase(context, userManager);
     }
 }
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapPost("/test/create-user", async (UserManager<ApplicationAuthor> userManager) =>
+    app.MapPost("/test/create-user", async (UserManager<Author> userManager) =>
     {
         var testUser = await userManager.FindByEmailAsync("test@chirp.dk");
         if (testUser == null)
         {
-            testUser = new ApplicationAuthor
+            testUser = new Author
             {
                 UserName = "test@chirp.dk",
                 Email = "test@chirp.dk",

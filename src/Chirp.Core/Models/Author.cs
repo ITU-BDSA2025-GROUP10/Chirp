@@ -1,18 +1,13 @@
+using Microsoft.AspNetCore.Identity;
 namespace Chirp.Core.Models;
 
-public class Author
+public class Author : IdentityUser<int>
 {
-    public int AuthorId { get; set; }           
-    public string Name { get; set; } = null!;
-
-    public string? DisplayName { get; set; } 
-    public string? Email { get; set; }          
     
     public List<Following> Following { get; set; } = null!; 
     
     public List<Following> Followers { get; set; } = null!; 
-
-
+    
     // Navigation
     public ICollection<Cheep> Cheeps { get; set; } = new List<Cheep>();
 }

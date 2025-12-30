@@ -1,10 +1,12 @@
 using Chirp.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace Chirp.Infrastructure;
 
-public class ChatDBContext : IdentityDbContext<ApplicationAuthor>
+public class ChatDBContext : IdentityDbContext<Author, IdentityRole<int>, int>
 {
     public DbSet<Cheep> Cheeps { get; set; }
     public DbSet<Author> Authors { get; set; }

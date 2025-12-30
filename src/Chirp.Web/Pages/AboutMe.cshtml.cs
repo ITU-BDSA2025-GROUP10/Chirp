@@ -14,15 +14,15 @@ namespace Chirp.Web.Pages
     [Authorize]
     public class AboutMeModel : PageModel
     {
-        private readonly UserManager<ApplicationAuthor> _userManager;
-        private readonly SignInManager<ApplicationAuthor> _signInManager;
+        private readonly UserManager<Author> _userManager;
+        private readonly SignInManager<Author> _signInManager;
         private readonly IAuthorRepository _authorRepository;
         private readonly ICheepRepository _cheepRepository;
         private readonly ILogger<AboutMeModel> _logger;
 
         public AboutMeModel(
-            UserManager<ApplicationAuthor> userManager,
-            SignInManager<ApplicationAuthor> signInManager,
+            UserManager<Author> userManager,
+            SignInManager<Author> signInManager,
             IAuthorRepository authorRepository,
             ICheepRepository cheepRepository,
             ILogger<AboutMeModel> logger)
@@ -150,7 +150,7 @@ namespace Chirp.Web.Pages
                     writer.WriteLine("Username");
                     foreach (var followed in Following)
                     {
-                        writer.WriteLine($"\"{followed.Name}\"");
+                        writer.WriteLine($"\"{followed.UserName}\"");
                     }
                 }
 
@@ -169,7 +169,7 @@ namespace Chirp.Web.Pages
             return memoryStream.ToArray();
         }
 
-        private async Task LoadUserDataAsync(ApplicationAuthor user)
+        private async Task LoadUserDataAsync(Author user)
         {
             UserName = user.UserName;
             Email = user.Email;

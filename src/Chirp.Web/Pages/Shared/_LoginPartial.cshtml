@@ -1,7 +1,8 @@
 @using Chirp.Infrastructure
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<ApplicationAuthor> SignInManager
-@inject UserManager<ApplicationAuthor> AuthorManager
+@using Chirp.Core.Models
+@inject SignInManager<Author> SignInManager
+@inject UserManager<Author> AuthorManager
 
 <div class="navigation">
     @if (SignInManager.IsSignedIn(User))
@@ -10,7 +11,7 @@
         <a href="/">public timeline</a>
         <a href="/following">following timeline</a>
         <a href="/AboutMe">about me</a>
-        <form asp-area="Identity" asp-page="/Account/Logout"
+        <form asp-page="/Account/Logout"
               asp-route-returnUrl="@Url.Page("/", new { area = "" })"
               method="post" style="display:inline">
             <button class="nav-link btn btn-link p-0" type="submit">
@@ -21,7 +22,7 @@
     else
     {
         <a href="/">public timeline</a>
-        <a asp-area="Identity" asp-page="/Account/Register">register</a>
-        <a asp-area="Identity" asp-page="/Account/Login">login</a>
+        <a asp-page="/Account/Register">register</a>
+        <a asp-page="/Account/Login">login</a>
     }
 </div>

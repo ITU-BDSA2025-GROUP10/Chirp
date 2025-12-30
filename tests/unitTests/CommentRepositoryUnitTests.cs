@@ -32,18 +32,18 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
         
         await using (var seed = _fx.CreateContext())
         {
-            var author = new Author { Name = "alice" };
+            var author = new Author { UserName = "alice" };
             seed.Authors.Add(author);
             await seed.SaveChangesAsync();
 
-            var cheep = new Cheep { Text = "hello", AuthorId = author.AuthorId };
+            var cheep = new Cheep { Text = "hello", AuthorId = author.Id };
             seed.Cheeps.Add(cheep);
             await seed.SaveChangesAsync();
             cheepId = cheep.CheepId;
 
             seed.Comments.AddRange(
-                new Comment { Text = "first",  CheepId = cheepId, AuthorId = author.AuthorId, TimeStamp = DateTime.UtcNow.AddMinutes(-2) },
-                new Comment { Text = "second", CheepId = cheepId, AuthorId = author.AuthorId, TimeStamp = DateTime.UtcNow.AddMinutes(-1) }
+                new Comment { Text = "first",  CheepId = cheepId, AuthorId = author.Id, TimeStamp = DateTime.UtcNow.AddMinutes(-2) },
+                new Comment { Text = "second", CheepId = cheepId, AuthorId = author.Id, TimeStamp = DateTime.UtcNow.AddMinutes(-1) }
             );
             await seed.SaveChangesAsync();
         }
@@ -64,11 +64,11 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var a = new Author { Name = "bob" };
+            var a = new Author { UserName = "bob" };
             seed.Authors.Add(a);
             await seed.SaveChangesAsync();
 
-            var c = new Cheep { Text = "none", AuthorId = a.AuthorId };
+            var c = new Cheep { Text = "none", AuthorId = a.Id };
             seed.Cheeps.Add(c);
             await seed.SaveChangesAsync();
             cheepId = c.CheepId;
@@ -91,18 +91,18 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var a = new Author { Name = "alice" };
+            var a = new Author { UserName = "alice" };
             seed.Authors.Add(a);
             await seed.SaveChangesAsync();
 
-            var cheep = new Cheep { Text = "test", AuthorId = a.AuthorId };
+            var cheep = new Cheep { Text = "test", AuthorId = a.Id };
             seed.Cheeps.Add(cheep);
             await seed.SaveChangesAsync();
             cheepId = cheep.CheepId;
 
             seed.Comments.AddRange(
-                new Comment { CheepId = cheepId, AuthorId = a.AuthorId, Text = "a" },
-                new Comment { CheepId = cheepId, AuthorId = a.AuthorId, Text = "b" }
+                new Comment { CheepId = cheepId, AuthorId = a.Id, Text = "a" },
+                new Comment { CheepId = cheepId, AuthorId = a.Id, Text = "b" }
             );
             await seed.SaveChangesAsync();
         }
@@ -123,11 +123,11 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var existing = new Author { Name = "owner" };
+            var existing = new Author { UserName = "owner" };
             seed.Authors.Add(existing);
             await seed.SaveChangesAsync();
 
-            var cheep = new Cheep { Text = "post", AuthorId = existing.AuthorId };
+            var cheep = new Cheep { Text = "post", AuthorId = existing.Id };
             seed.Cheeps.Add(cheep);
             await seed.SaveChangesAsync();
 
@@ -155,7 +155,7 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
         savedComment.Should().NotBeNull();
 
         savedComment!.Text.Should().Be("nice!");
-        savedComment.AuthorId.Should().Be(savedAuthor!.AuthorId);
+        savedComment.AuthorId.Should().Be(savedAuthor!.Id);
     }
 
     [Fact]
@@ -167,12 +167,12 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
         // Seed
         await using (var seed = _fx.CreateContext())
         {
-            var author = new Author { Name = "alice", Email = "alice@example.com" };
+            var author = new Author { UserName = "alice", Email = "alice@example.com" };
             seed.Authors.Add(author);
             await seed.SaveChangesAsync();
-            existingAuthorId = author.AuthorId;
+            existingAuthorId = author.Id;
 
-            var cheep = new Cheep { Text = "post", AuthorId = author.AuthorId };
+            var cheep = new Cheep { Text = "post", AuthorId = author.Id };
             seed.Cheeps.Add(cheep);
             await seed.SaveChangesAsync();
             cheepId = cheep.CheepId;
@@ -207,18 +207,18 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
 
         await using (var seed = _fx.CreateContext())
         {
-            var a = new Author { Name = "alice" };
+            var a = new Author { UserName = "alice" };
             seed.Authors.Add(a);
             await seed.SaveChangesAsync();
 
-            var cheep = new Cheep { Text = "post", AuthorId = a.AuthorId };
+            var cheep = new Cheep { Text = "post", AuthorId = a.Id };
             seed.Cheeps.Add(cheep);
             await seed.SaveChangesAsync();
 
             var c = new Comment 
             {
                 Text = "delete me",
-                AuthorId = a.AuthorId,
+                AuthorId = a.Id,
                 CheepId = cheep.CheepId,
                 TimeStamp = DateTime.UtcNow
             };
