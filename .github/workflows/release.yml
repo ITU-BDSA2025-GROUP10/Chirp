@@ -45,9 +45,9 @@ jobs:
         run: dotnet restore
 
       - name: Test (Unit Tests)
-        run: dotnet test tests/unitTests/unitTests.csproj --no-build --verbosity normal
+        run: dotnet test tests/unitTests/unitTests.csproj --verbosity normal
       - name: Test (Integration Tests)
-        run: dotnet test tests/IntegrationTests/IntegrationTests.csproj --no-build --verbosity normal
+        run: dotnet test tests/IntegrationTests/IntegrationTests.csproj --verbosity normal
 
   prepRelease:
     name: prepare GitHub Release
