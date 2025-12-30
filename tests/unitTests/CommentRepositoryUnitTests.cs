@@ -25,14 +25,11 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     //  GET COMMENTS BY CHEEP ID
-
-
     [Fact]
     public async Task GetCommentsByCheepIdAsync_ReturnsOrderedComments_ForCheep()
     {
         int cheepId;
-
-        // Seed
+        
         await using (var seed = _fx.CreateContext())
         {
             var author = new Author { Name = "alice" };
@@ -87,8 +84,6 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
 
    
     //  GET COMMENT COUNT
-   
-
     [Fact]
     public async Task GetCommentCountByCheepIdAsync_ReturnsCorrectCount()
     {
@@ -119,11 +114,8 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
 
         count.Should().Be(2);
     }
-
-   
+    
     //  CREATE COMMENT
-   
-
     [Fact]
     public async Task CreateCommentAsync_CreatesAuthorIfMissing_AndSavesComment()
     {
@@ -208,8 +200,6 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
 
  
     //  DELETE COMMENT
- 
-
     [Fact]
     public async Task DeleteCommentAsync_RemovesComment_WhenExists()
     {
@@ -255,8 +245,6 @@ public class CommentRepositoryUnitTests : IAsyncLifetime
     {
         await using var ctx = _fx.CreateContext();
         var repo = new CommentRepository(ctx);
-
-        // Should NOT throw
         await repo.DeleteCommentAsync(999);
 
         await using var verify = _fx.CreateContext();

@@ -69,7 +69,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
     [Fact]
     public async Task ReadCheepsAsync_ReturnsDescendingAndFiltersByAuthor()
     {
-        // seed
+        
         await using (var seed = _fx.CreateContext())
         {
             var alice = new Author { Name = "alice" };
@@ -90,18 +90,16 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
 
         var result = await repo.ReadCheepsAsync(author: "alice", page: 0, pageSize: 32);
 
-        result.Select(c => c.Text).Should().Equal("new", "old");             // order desc by timestamp
-        result.Should().OnlyContain(c => c.Author == "alice");               // filter by author
+        result.Select(c => c.Text).Should().Equal("new", "old");          
+        result.Should().OnlyContain(c => c.Author == "alice");              
         result.All(c => !string.IsNullOrWhiteSpace(c.Timestamp)).Should().BeTrue();
-
-        // (Optional) Check timestamp format "MM/dd/yy H:mm:ss"
+        
         var rx = new Regex(@"^\d{2}/\d{2}/\d{2} \d{1,2}:\d{2}:\d{2}$");
         result.Should().OnlyContain(c => !string.IsNullOrEmpty(c.Timestamp) && rx.IsMatch(c.Timestamp!));    }
 
     [Fact]
     public async Task ReadCheepsAsync_AppliesPaging()
     {
-        // seed 5 cheeps for alice with increasing timestamps
         await using (var seed = _fx.CreateContext())
         {
             var alice = new Author { Name = "alice" };
@@ -121,8 +119,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
 
         await using var ctx = _fx.CreateContext();
         var repo = new CheepRepository(ctx);
-
-        // pageSize 2: page 0 = newest two; page 1 = next two; page 2 = last one
+        
         var p0 = await repo.ReadCheepsAsync("alice", page: 0, pageSize: 2);
         var p1 = await repo.ReadCheepsAsync("alice", page: 1, pageSize: 2);
         var p2 = await repo.ReadCheepsAsync("alice", page: 2, pageSize: 2);
@@ -131,7 +128,7 @@ public class CheepRepositoryUnitTests : IAsyncLifetime
         p1.Select(x => x.Text).Should().HaveCount(2);
         p2.Select(x => x.Text).Should().HaveCount(1);
 
-        // Ensure no overlap and overall ordering (c0 newest)
+        
         var combined = p0.Concat(p1).Concat(p2).Select(x => x.Text).ToList();
         combined.Should().Equal("c0","c1","c2","c3","c4");
     }

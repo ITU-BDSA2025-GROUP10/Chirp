@@ -26,14 +26,13 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 
-        // Remove all data
+        // clear all data
         db.Followings.RemoveRange(db.Followings);
         db.Cheeps.RemoveRange(db.Cheeps);
         db.Authors.RemoveRange(db.Authors);
         await db.SaveChangesAsync();
     }
-
-    // Baseline test to see that integration test setup works
+    
     // This test ensures that a user can visit our homepage without the app crashing
     [Fact]
     public async Task Homepage_ReturnsSuccessStatusCode()

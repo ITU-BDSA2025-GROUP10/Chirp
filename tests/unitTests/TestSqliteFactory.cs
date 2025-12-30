@@ -26,7 +26,7 @@ public sealed class TestSqliteFactory<TContext> : IAsyncLifetime
     public TContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<TContext>()
-            .UseSqlite(_connection)               // real provider
+            .UseSqlite(_connection)            
             .EnableSensitiveDataLogging()
             .Options;
 
