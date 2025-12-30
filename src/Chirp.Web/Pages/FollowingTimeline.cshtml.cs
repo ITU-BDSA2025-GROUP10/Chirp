@@ -40,8 +40,8 @@ public class FollowingTimelineModel : PageModel
 
     public async Task<IActionResult> OnPostFollowAsync(string author, int? pageIndex)
     {
-        var followerEmail = User.Identity!.Name!;
-        var followerId = await _authorRepository.getAuthorByEmailAsync(followerEmail);
+        var followerUserName = User.Identity!.Name!;
+        var followerId = await _authorRepository.getAuthorByNameAsync(followerUserName);
         var followedId = await _authorRepository.getAuthorByNameAsync(author);
 
         await _authorRepository.CreateFollowingAsync(followerId, followedId);
@@ -51,8 +51,8 @@ public class FollowingTimelineModel : PageModel
 
     public async Task<IActionResult> OnPostUnfollowAsync(string author, int? pageIndex)
     {
-        var followerEmail = User.Identity!.Name!;
-        var followerId = await _authorRepository.getAuthorByEmailAsync(followerEmail);
+        var followerUserName = User.Identity!.Name!;
+        var followerId = await _authorRepository.getAuthorByNameAsync(followerUserName);
         var followedId = await _authorRepository.getAuthorByNameAsync(author);
 
         await _authorRepository.DeleteFollowingAsync(followerId, followedId);

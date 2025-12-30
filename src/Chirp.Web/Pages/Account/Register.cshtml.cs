@@ -55,24 +55,6 @@ namespace Chirp.Web.Pages.Account
         {
             ReturnUrl = returnUrl;
         }
-
-        /*
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
-            // ... eksisterende validering
-            if (ModelState.IsValid)
-            {
-                var user = CreateUser();
-        
-                // RET DISSE LINJER:
-                await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                // ... resten af koden
-            }
-        }
-        */
         
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
@@ -106,26 +88,17 @@ namespace Chirp.Web.Pages.Account
                     }
                     else
                     {
-                        // Author exists but has no password (from seed data) - add password and update username
-                        existingAuthor.UserName = Input.UserName;
-                        existingAuthor.Email = Input.Email;
+                        // Author exists but has no password (from seed data) - just add password
                         existingAuthor.EmailConfirmed = true;
-
-                        var updateResult = await _userManager.UpdateAsync(existingAuthor);
-                        if (!updateResult.Succeeded)
-                        {
-                            foreach (var error in updateResult.Errors)
-                            {
-                                ModelState.AddModelError(string.Empty, error.Description);
-                            }
-                            return Page();
-                        }
 
                         var addPasswordResult = await _userManager.AddPasswordAsync(existingAuthor, Input.Password);
 
                         if (addPasswordResult.Succeeded)
                         {
-                            _logger.LogInformation("User with existing email created a password and username.");
+                            // Update email confirmed status
+                            await _userManager.UpdateAsync(existingAuthor);
+
+                            _logger.LogInformation("User with existing account created a password.");
 
                             // Sign them in
                             await _signInManager.SignInAsync(existingAuthor, isPersistent: false);
