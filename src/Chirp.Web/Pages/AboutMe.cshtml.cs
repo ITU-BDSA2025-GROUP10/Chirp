@@ -93,17 +93,13 @@ namespace Chirp.Web.Pages
 
             try
             {
-                await _authorRepository.DeleteAuthorByEmailAsync(user.Email);
+                // DeleteAuthorAsync deletes the Author and all related data (cheeps, followings, comments)
+                // Since Author inherits from IdentityUser<int>, this also removes the user from Identity tables
+                await _authorRepository.DeleteAuthorAsync(user.Id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting author data");
-                throw;
-            }
-
-            var result = await _userManager.DeleteAsync(user);
-            if (!result.Succeeded)
-            {
                 throw new InvalidOperationException("Unexpected error occurred deleting user.");
             }
 
