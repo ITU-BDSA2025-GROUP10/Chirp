@@ -8,7 +8,7 @@ public class TimelineTests : PlaywrightTestBase
         await LoginHelper.LoginAsync(Page, BaseUrl, TestEmail, TestPassword);
 
         await Page.WaitForSelectorAsync("text=Public Timeline");
-        // asserts that the loaded HTML contains “Public Timeline”
+        
         Assert.Contains("Public Timeline", await Page.ContentAsync());
     }
 }
