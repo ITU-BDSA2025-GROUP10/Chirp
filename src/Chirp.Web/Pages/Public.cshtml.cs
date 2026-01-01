@@ -55,18 +55,8 @@ public class PublicModel : PageModel
         if (!User.Identity?.IsAuthenticated ?? true)
             return RedirectToPage();
 
-        var email = User.Identity!.Name!;
-        int followerId;
-        try
-        {
-            followerId = await _authorRepository.getAuthorByEmailAsync(email);
-        }
-        catch (KeyNotFoundException)
-        {
-            followerId = await _authorRepository.createAuthorAsync(email, email);
-        }
-
-
+        var userName = User.Identity!.Name!;
+        var followerId = await _authorRepository.getAuthorByNameAsync(userName);
         var followedId = await _authorRepository.getAuthorByNameAsync(author);
         await _authorRepository.CreateFollowingAsync(followerId, followedId);
 
@@ -75,8 +65,11 @@ public class PublicModel : PageModel
 
     public async Task<IActionResult> OnPostUnfollowAsync(string author, int? pageIndex)
     {
-        var email = User.Identity!.Name!;
-        var followerId = await _authorRepository.getAuthorByEmailAsync(email);
+        if (!User.Identity?.IsAuthenticated ?? true)
+            return RedirectToPage();
+
+        var userName = User.Identity!.Name!;
+        var followerId = await _authorRepository.getAuthorByNameAsync(userName);
         var followedId = await _authorRepository.getAuthorByNameAsync(author);
 
         await _authorRepository.DeleteFollowingAsync(followerId, followedId);

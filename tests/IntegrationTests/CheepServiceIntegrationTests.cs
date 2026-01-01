@@ -57,17 +57,17 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
           var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 
           // Create three authors
-          var alice = new Author { Name = "alice", Email = "alice@test.com" };
-          var bob = new Author { Name = "bob", Email = "bob@test.com" };
-          var charlie = new Author { Name = "charlie", Email = "charlie@test.com" };
+          var alice = new Author { UserName = "alice", Email = "alice@test.com" };
+          var bob = new Author { UserName = "bob", Email = "bob@test.com" };
+          var charlie = new Author { UserName = "charlie", Email = "charlie@test.com" };
           db.Authors.AddRange(alice, bob, charlie);
           await db.SaveChangesAsync();
 
           // Alice follows Bob (but NOT Charlie)
           var following = new Following
           {
-              FollowerId = alice.AuthorId,
-              FollowedId = bob.AuthorId
+              FollowerId = alice.Id,
+              FollowedId = bob.Id
           };
           db.Followings.Add(following);
           await db.SaveChangesAsync();
@@ -76,13 +76,13 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
           var bobCheep = new Cheep
           {
               Text = "Cheep from Bob",
-              AuthorId = bob.AuthorId,
+              AuthorId = bob.Id,
               TimeStamp = DateTime.UtcNow.AddMinutes(-1) // Older
           };
           var charlieCheep = new Cheep
           {
               Text = "Cheep from Charlie",
-              AuthorId = charlie.AuthorId,
+              AuthorId = charlie.Id,
               TimeStamp = DateTime.UtcNow // Newer
           };
           db.Cheeps.AddRange(bobCheep, charlieCheep);
@@ -110,21 +110,21 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
         {
             var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
             
-            var alice = new Author{ Name = "alice", Email = "alice@test.com" };
-            var bob = new Author { Name = "bob", Email = "bob@test.com" };
+            var alice = new Author{ UserName = "alice", Email = "alice@test.com" };
+            var bob = new Author { UserName = "bob", Email = "bob@test.com" };
             db.Authors.AddRange(alice, bob);
             await db.SaveChangesAsync();
 
             var aliceCheep = new Cheep
             {
                 Text = "Cheep from Alice",
-                AuthorId = alice.AuthorId,
+                AuthorId = alice.Id,
                 TimeStamp = DateTime.UtcNow
             };
             var bobCheep = new Cheep
             {
                 Text = "Cheep from Bob",
-                AuthorId = bob.AuthorId,
+                AuthorId = bob.Id,
                 TimeStamp = DateTime.UtcNow
             };
             db.Cheeps.AddRange(aliceCheep, bobCheep);
@@ -152,18 +152,18 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
 
 		// Create authors
-			var alice = new Author { Name = "alice", Email = "alice@test.com"};
-			var bob = new Author { Name = "bob", Email = "bob@test.com"};
-			var charlie = new Author { Name = "charlie", Email = "charlie@test.com"};
+			var alice = new Author { UserName = "alice", Email = "alice@test.com"};
+			var bob = new Author { UserName = "bob", Email = "bob@test.com"};
+			var charlie = new Author { UserName = "charlie", Email = "charlie@test.com"};
 			db.Authors.AddRange(alice, bob, charlie);
 			await db.SaveChangesAsync();
 
 		// bob follows charlie
-			await authorRepo.CreateFollowingAsync(bob.AuthorId, charlie.AuthorId);
+			await authorRepo.CreateFollowingAsync(bob.Id, charlie.Id);
 
 		// create cheeps for both
-			var bobCheep = new Cheep{ AuthorId = bob.AuthorId, Text = "Bob's test cheep", TimeStamp = DateTime.UtcNow };
-			var charlieCheep = new Cheep{ AuthorId = charlie.AuthorId, Text = "Charlie's test cheep", TimeStamp = DateTime.UtcNow };
+			var bobCheep = new Cheep{ AuthorId = bob.Id, Text = "Bob's test cheep", TimeStamp = DateTime.UtcNow };
+			var charlieCheep = new Cheep{ AuthorId = charlie.Id, Text = "Charlie's test cheep", TimeStamp = DateTime.UtcNow };
 			db.Cheeps.AddRange(bobCheep, charlieCheep);
 			await db.SaveChangesAsync();
 		}
@@ -174,12 +174,12 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
 
-			var alice = db.Authors.First(a => a.Name == "alice");
-			var bob = db.Authors.First(a => a.Name == "bob");
-			var charlie = db.Authors.First(a => a.Name == "charlie");
+			var alice = db.Authors.First(a => a.UserName == "alice");
+			var bob = db.Authors.First(a => a.UserName == "bob");
+			var charlie = db.Authors.First(a => a.UserName == "charlie");
 
-			await authorRepo.CreateFollowingAsync(alice.AuthorId, bob.AuthorId);
-			await authorRepo.CreateFollowingAsync(alice.AuthorId, charlie.AuthorId);
+			await authorRepo.CreateFollowingAsync(alice.Id, bob.Id);
+			await authorRepo.CreateFollowingAsync(alice.Id, charlie.Id);
 		}
 
 		// ASSERT: verify Alice follows both
@@ -187,15 +187,15 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 		{
 			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 
-			var alice = db.Authors.First(a => a.Name == "alice");
-			var bob = db.Authors.First(a => a.Name == "bob");
-			var charlie = db.Authors.First(a => a.Name == "charlie");
+			var alice = db.Authors.First(a => a.UserName == "alice");
+			var bob = db.Authors.First(a => a.UserName == "bob");
+			var charlie = db.Authors.First(a => a.UserName == "charlie");
 
-			var followings = db.Followings.Where(f => f.FollowerId == alice.AuthorId).ToList();
+			var followings = db.Followings.Where(f => f.FollowerId == alice.Id).ToList();
 
 			followings.Should().HaveCount(2);
-			followings.Should().Contain(f => f.FollowedId == bob.AuthorId);
-			followings.Should().Contain(f => f.FollowedId == charlie.AuthorId);
+			followings.Should().Contain(f => f.FollowedId == bob.Id);
+			followings.Should().Contain(f => f.FollowedId == charlie.Id);
 		}
 	}
 
@@ -212,31 +212,31 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
 
 			// Create three authors
-			var alice = new Author { Name = "alice", Email = "alice@test.com" };
-			var bob = new Author { Name = "bob", Email = "bob@test.com" };
-			var charlie = new Author { Name = "charlie", Email = "charlie@test.com" };
+			var alice = new Author { UserName = "alice", Email = "alice@test.com" };
+			var bob = new Author { UserName = "bob", Email = "bob@test.com" };
+			var charlie = new Author { UserName = "charlie", Email = "charlie@test.com" };
 			db.Authors.AddRange(alice, bob, charlie);
 			await db.SaveChangesAsync();
 
 			// Alice follows Bob, but NOT Charlie
-			await authorRepo.CreateFollowingAsync(alice.AuthorId, bob.AuthorId);
+			await authorRepo.CreateFollowingAsync(alice.Id, bob.Id);
 
 			// All three create cheeps at different times
 			var aliceCheep = new Cheep
 			{
-				AuthorId = alice.AuthorId,
+				AuthorId = alice.Id,
 				Text = "Alice's cheep",
 				TimeStamp = DateTime.UtcNow.AddMinutes(-2)
 			};
 			var bobCheep = new Cheep
 			{
-				AuthorId = bob.AuthorId,
+				AuthorId = bob.Id,
 				Text = "Bob's cheep",
 				TimeStamp = DateTime.UtcNow.AddMinutes(-1)
 			};
 			var charlieCheep = new Cheep
 			{
-				AuthorId = charlie.AuthorId,
+				AuthorId = charlie.Id,
 				Text = "Charlie's cheep",
 				TimeStamp = DateTime.UtcNow
 			};
@@ -279,19 +279,19 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
             var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
 
             // Create three authors
-            var alice = new Author { Name = "alice", Email = "alice@test.com" };
-            var bob = new Author { Name = "bob", Email = "bob@test.com" };
-            var charlie = new Author { Name = "charlie", Email = "charlie@test.com" };
+            var alice = new Author { UserName = "alice", Email = "alice@test.com" };
+            var bob = new Author { UserName = "bob", Email = "bob@test.com" };
+            var charlie = new Author { UserName = "charlie", Email = "charlie@test.com" };
             db.Authors.AddRange(alice, bob, charlie);
             await db.SaveChangesAsync();
 
             // Alice follows both Bob and Charlie
-            await authorRepo.CreateFollowingAsync(alice.AuthorId, bob.AuthorId);
-            await authorRepo.CreateFollowingAsync(alice.AuthorId, charlie.AuthorId);
+            await authorRepo.CreateFollowingAsync(alice.Id, bob.Id);
+            await authorRepo.CreateFollowingAsync(alice.Id, charlie.Id);
 
             // Create cheeps for both Bob and Charlie
-            var bobCheep = new Cheep { AuthorId = bob.AuthorId, Text = "Bob's cheep", TimeStamp = DateTime.UtcNow };
-            var charlieCheep = new Cheep { AuthorId = charlie.AuthorId, Text = "Charlie's cheep", TimeStamp = DateTime.UtcNow };
+            var bobCheep = new Cheep { AuthorId = bob.Id, Text = "Bob's cheep", TimeStamp = DateTime.UtcNow };
+            var charlieCheep = new Cheep { AuthorId = charlie.Id, Text = "Charlie's cheep", TimeStamp = DateTime.UtcNow };
             db.Cheeps.AddRange(bobCheep, charlieCheep);
             await db.SaveChangesAsync();
         }
@@ -302,10 +302,10 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
             var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
             var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
 
-            var alice = db.Authors.First(a => a.Name == "alice");
-            var charlie = db.Authors.First(a => a.Name == "charlie");
+            var alice = db.Authors.First(a => a.UserName == "alice");
+            var charlie = db.Authors.First(a => a.UserName == "charlie");
 
-            await authorRepo.DeleteFollowingAsync(alice.AuthorId, charlie.AuthorId);
+            await authorRepo.DeleteFollowingAsync(alice.Id, charlie.Id);
         }
 
         // ASSERT: Verify Alice still follows Bob but no longer follows Charlie
@@ -313,16 +313,16 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
         {
             var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 
-            var alice = db.Authors.First(a => a.Name == "alice");
-            var bob = db.Authors.First(a => a.Name == "bob");
-            var charlie = db.Authors.First(a => a.Name == "charlie");
+            var alice = db.Authors.First(a => a.UserName == "alice");
+            var bob = db.Authors.First(a => a.UserName == "bob");
+            var charlie = db.Authors.First(a => a.UserName == "charlie");
 
-            var followings = db.Followings.Where(f => f.FollowerId == alice.AuthorId).ToList();
+            var followings = db.Followings.Where(f => f.FollowerId == alice.Id).ToList();
 
             // Alice should only follow Bob now
             followings.Should().HaveCount(1);
-            followings.Should().Contain(f => f.FollowedId == bob.AuthorId);
-            followings.Should().NotContain(f => f.FollowedId == charlie.AuthorId);
+            followings.Should().Contain(f => f.FollowedId == bob.Id);
+            followings.Should().NotContain(f => f.FollowedId == charlie.Id);
         }
     }
 
@@ -337,8 +337,8 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 		{
 			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 
-			var alice = new Author { Name = "alice", Email = "alice@test.com" };
-			var bob = new Author { Name = "bob", Email = "bob@test.com" };
+			var alice = new Author { UserName = "alice", Email = "alice@test.com" };
+			var bob = new Author { UserName = "bob", Email = "bob@test.com" };
 			db.Authors.AddRange(alice, bob);
 			await db.SaveChangesAsync();
 		}
@@ -394,7 +394,7 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 			var service = scope.ServiceProvider.GetRequiredService<ICheepService>();
 
-			var alice = new Author { Name = "alice", Email = "alice@test.com" };
+			var alice = new Author { UserName = "alice", Email = "alice@test.com" };
 			db.Authors.Add(alice);
 			await db.SaveChangesAsync();
 
@@ -451,15 +451,15 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			var authorRepo = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
 
 			// Create three authors
-			var alice = new Author { Name = "alice", Email = "alice@test.com" };
-			var bob = new Author { Name = "bob", Email = "bob@test.com" };
-			var charlie = new Author { Name = "charlie", Email = "charlie@test.com" };
+			var alice = new Author { UserName = "alice", Email = "alice@test.com" };
+			var bob = new Author { UserName = "bob", Email = "bob@test.com" };
+			var charlie = new Author { UserName = "charlie", Email = "charlie@test.com" };
 			db.Authors.AddRange(alice, bob, charlie);
 			await db.SaveChangesAsync();
 
-			aliceId = alice.AuthorId;
-			bobId = bob.AuthorId;
-			charlieId = charlie.AuthorId;
+			aliceId = alice.Id;
+			bobId = bob.Id;
+			charlieId = charlie.Id;
 
 			// Create following relationships: Alice follows Bob, Bob follows Charlie
 			await authorRepo.CreateFollowingAsync(aliceId, bobId);
@@ -501,7 +501,7 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
 
 			// Bob should be deleted
-			var bobExists = await db.Authors.AnyAsync(a => a.AuthorId == bobId);
+			var bobExists = await db.Authors.AnyAsync(a => a.Id == bobId);
 			bobExists.Should().BeFalse();
 
 			// Bob's cheeps should be deleted
@@ -518,10 +518,10 @@ public class CheepServiceIntegrationTests : IClassFixture<CustomWebApplicationFa
 			bobToCharlieFollowing.Should().BeFalse();
 
 			// Alice and Charlie should still exist with their cheeps
-			var aliceExists = await db.Authors.AnyAsync(a => a.AuthorId == aliceId);
+			var aliceExists = await db.Authors.AnyAsync(a => a.Id == aliceId);
 			aliceExists.Should().BeTrue();
 
-			var charlieExists = await db.Authors.AnyAsync(a => a.AuthorId == charlieId);
+			var charlieExists = await db.Authors.AnyAsync(a => a.Id == charlieId);
 			charlieExists.Should().BeTrue();
 
 			var aliceCheepExists = await db.Cheeps.AnyAsync(c => c.AuthorId == aliceId);

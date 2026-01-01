@@ -22,7 +22,7 @@ public class CommentRepository : ICommentRepository
                 CommentId = c.CommentId,
                 Text = c.Text,
                 TimeStamp = c.TimeStamp,
-                AuthorName = c.Author.Name,
+                AuthorName = c.Author.UserName,
                 CheepId = c.CheepId
             })
             .ToListAsync();
@@ -37,13 +37,13 @@ public class CommentRepository : ICommentRepository
     public async Task CreateCommentAsync(CommentDTO comment)
     {
         var author = await _context.Authors
-            .FirstOrDefaultAsync(a => a.Email == comment.AuthorName || a.Name == comment.AuthorName);
+            .FirstOrDefaultAsync(a => a.Email == comment.AuthorName || a.UserName == comment.AuthorName);
 
         if (author == null)
         {
             author = new Author
             {
-                Name = comment.AuthorName,
+                UserName = comment.AuthorName,
                 Email = comment.AuthorName
             };
             _context.Authors.Add(author);
@@ -54,7 +54,7 @@ public class CommentRepository : ICommentRepository
         {
             Text = comment.Text,
             CheepId = comment.CheepId,
-            AuthorId = author.AuthorId,
+            AuthorId = author.Id,
             TimeStamp = DateTime.UtcNow
         };
 

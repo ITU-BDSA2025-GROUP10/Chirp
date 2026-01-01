@@ -16,13 +16,13 @@ public class AuthorRepository : IAuthorRepository
     {
         var author = await _db.Authors
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Name == name);
+            .FirstOrDefaultAsync(a => a.UserName == name);
         if (author is null)
         {
             throw new KeyNotFoundException($"Author with name '{name}' does not exist");
         }
 
-        return author.AuthorId;
+        return author.Id;
     }
     
     // Return the id of the author with that email
@@ -36,7 +36,7 @@ public class AuthorRepository : IAuthorRepository
             throw new KeyNotFoundException($"Author with name '{email}' does not exist");
         }
 
-        return author.AuthorId;
+        return author.Id;
     }
     
     
@@ -45,14 +45,14 @@ public class AuthorRepository : IAuthorRepository
     {
         var author = new Author
         {
-            Name = name,
+            UserName = name,
             Email = email,
         };
         _db.Authors.Add(author);
         
         await _db.SaveChangesAsync();
         
-        return author.AuthorId;
+        return author.Id;
     }
     
     // Delete an author from the database.
@@ -62,7 +62,7 @@ public class AuthorRepository : IAuthorRepository
             .Include(a => a.Cheeps)
             .Include(a => a.Following)
             .Include(a => a.Followers)
-            .FirstOrDefaultAsync(a => a.AuthorId == id);
+            .FirstOrDefaultAsync(a => a.Id == id);
 
         if (author == null)
         {
@@ -91,8 +91,8 @@ public class AuthorRepository : IAuthorRepository
     // Create list of whom the user is following
     public async Task CreateFollowingAsync(int followerId, int followedId)
     {
-        var followerExists = await _db.Authors.AnyAsync(a => a.AuthorId == followerId);
-        var followedExists = await _db.Authors.AnyAsync(a => a.AuthorId == followedId);
+        var followerExists = await _db.Authors.AnyAsync(a => a.Id == followerId);
+        var followedExists = await _db.Authors.AnyAsync(a => a.Id == followedId);
 
         if (!followerExists || !followedExists)
         {
@@ -141,7 +141,7 @@ public class AuthorRepository : IAuthorRepository
         return await _db.Authors
             .Include(a => a.Following)
             .ThenInclude(f => f.Followed)
-            .FirstOrDefaultAsync(a => a.AuthorId == authorId);
+            .FirstOrDefaultAsync(a => a.Id == authorId);
     }
 
     // Get list of author IDs that the given author is following
@@ -152,13 +152,13 @@ public class AuthorRepository : IAuthorRepository
 
         var author = await _db.Authors
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.Name == authorName);
+            .SingleOrDefaultAsync(a => a.UserName == authorName);
 
         if (author is null)
             return new List<int>();
 
         return await _db.Followings
-            .Where(f => f.FollowerId == author.AuthorId)
+            .Where(f => f.FollowerId == author.Id)
             .Select(f => f.FollowedId)
             .ToListAsync();
     }

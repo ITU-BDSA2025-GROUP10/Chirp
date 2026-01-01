@@ -23,15 +23,15 @@ public class CheepRepository : ICheepRepository
                    .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(author))
-            q = q.Where(m => m.Author.Name == author);
+            q = q.Where(m => m.Author.UserName == author);
 
         var items = await q.Skip(page * pageSize)
                            .Take(pageSize)
                            .Select(m => new CheepDTO
                                    {
                                        Id = m.CheepId,
-                                       AuthorId = m.AuthorId,
-                                       Author = m.Author.Name,
+                                       AuthorId = m.Author.Id,
+                                       Author = m.Author.UserName,
                                        Text = m.Text,
                                        Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss", CultureInfo.InvariantCulture),
                                        CommentCount = m.Comments.Count
@@ -57,8 +57,8 @@ public class CheepRepository : ICheepRepository
             .Select(m => new CheepDTO
             {
                 Id = m.CheepId,
-                AuthorId = m.AuthorId,
-                Author = m.Author.Name,
+                AuthorId = m.Author.Id,
+                Author = m.Author.UserName,
                 Text = m.Text,
                 Timestamp = m.TimeStamp.ToString("MM/dd/yy H:mm:ss", CultureInfo.InvariantCulture),
                 CommentCount = m.Comments.Count
@@ -75,10 +75,10 @@ public class CheepRepository : ICheepRepository
         if (string.IsNullOrWhiteSpace(dto.Text))
             throw new ArgumentException("Text is required.", nameof(dto.Text));
 
-        var author = await _db.Authors.FirstOrDefaultAsync(u => u.Name == dto.Author);
+        var author = await _db.Authors.FirstOrDefaultAsync(u => u.UserName == dto.Author);
         if (author is null)
         {
-            author = new Author { Name = dto.Author };
+            author = new Author { UserName = dto.Author };
             _db.Authors.Add(author);
             await _db.SaveChangesAsync();
         }
@@ -87,7 +87,7 @@ public class CheepRepository : ICheepRepository
         {
             Text = dto.Text,
             TimeStamp = DateTime.UtcNow,
-            AuthorId = author.AuthorId
+            AuthorId = author.Id
         };
 
         _db.Cheeps.Add(msg);

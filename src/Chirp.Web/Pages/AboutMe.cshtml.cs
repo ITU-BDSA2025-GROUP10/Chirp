@@ -14,15 +14,15 @@ namespace Chirp.Web.Pages
     [Authorize]
     public class AboutMeModel : PageModel
     {
-        private readonly UserManager<ApplicationAuthor> _userManager;
-        private readonly SignInManager<ApplicationAuthor> _signInManager;
+        private readonly UserManager<Author> _userManager;
+        private readonly SignInManager<Author> _signInManager;
         private readonly IAuthorRepository _authorRepository;
         private readonly ICheepRepository _cheepRepository;
         private readonly ILogger<AboutMeModel> _logger;
 
         public AboutMeModel(
-            UserManager<ApplicationAuthor> userManager,
-            SignInManager<ApplicationAuthor> signInManager,
+            UserManager<Author> userManager,
+            SignInManager<Author> signInManager,
             IAuthorRepository authorRepository,
             ICheepRepository cheepRepository,
             ILogger<AboutMeModel> logger)
@@ -93,17 +93,13 @@ namespace Chirp.Web.Pages
 
             try
             {
-                await _authorRepository.DeleteAuthorByEmailAsync(user.Email);
+                // DeleteAuthorAsync deletes the Author and all related data (cheeps, followings, comments)
+                // Since Author inherits from IdentityUser<int>, this also removes the user from Identity tables
+                await _authorRepository.DeleteAuthorAsync(user.Id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting author data");
-                throw;
-            }
-
-            var result = await _userManager.DeleteAsync(user);
-            if (!result.Succeeded)
-            {
                 throw new InvalidOperationException("Unexpected error occurred deleting user.");
             }
 
@@ -150,7 +146,7 @@ namespace Chirp.Web.Pages
                     writer.WriteLine("Username");
                     foreach (var followed in Following)
                     {
-                        writer.WriteLine($"\"{followed.Name}\"");
+                        writer.WriteLine($"\"{followed.UserName}\"");
                     }
                 }
 
@@ -169,7 +165,7 @@ namespace Chirp.Web.Pages
             return memoryStream.ToArray();
         }
 
-        private async Task LoadUserDataAsync(ApplicationAuthor user)
+        private async Task LoadUserDataAsync(Author user)
         {
             UserName = user.UserName;
             Email = user.Email;
