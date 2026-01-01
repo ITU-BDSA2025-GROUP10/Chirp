@@ -1,3 +1,4 @@
+using Microsoft.Playwright;
 using Xunit;
 
 public class LoginPageTests : PlaywrightTestBase
@@ -5,11 +6,12 @@ public class LoginPageTests : PlaywrightTestBase
     [Fact]
     public async Task Login_Page_Loads()
     {
-        await Page.GotoAsync($"{BaseUrl}/Identity/Account/Login");
+        await Page.GotoAsync($"{BaseUrl}/Account/Login");
         await Page.WaitForSelectorAsync("form");
+        
+        //assert that the loginbutton  is rendered
+        var loginButtonText = await Page.GetByRole(AriaRole.Button, new() { Name = "Log in" }).TextContentAsync();
+        Assert.Contains("Log in", loginButtonText, StringComparison.OrdinalIgnoreCase);
 
-        //assert that the loginpage is rendered
-        var heading = await Page.Locator("h1").TextContentAsync();
-        Assert.Contains("Log", heading, StringComparison.OrdinalIgnoreCase);
     }
 }
