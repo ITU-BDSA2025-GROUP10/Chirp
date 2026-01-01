@@ -7,7 +7,7 @@ public class initialTests : PlaywrightTestBase
     {
         await Page.GotoAsync(BaseUrl);
 
-        // assert a page is returned
+        
         var title = await Page.TitleAsync();
         Assert.False(string.IsNullOrEmpty(title));
     }
