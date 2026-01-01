@@ -26,6 +26,11 @@ builder.Services.AddAuthentication()
         options.ClientId = builder.Configuration["Authentication:GitHub:ClientID"];
         options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
         options.CallbackPath = "/signin-github"; 
+        
+        options.SignInScheme = IdentityConstants.ExternalScheme;
+
+        options.Scope.Add("user:email");
+        options.SaveTokens = true;
     });
 
 builder.Services.AddScoped<ICheepService, CheepService>();
