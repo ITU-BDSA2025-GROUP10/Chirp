@@ -30,6 +30,8 @@ namespace Chirp.Web.Pages.Account
 
         [TempData]
         public string ErrorMessage { get; set; }
+        
+        public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
         {
@@ -55,6 +57,8 @@ namespace Chirp.Web.Pages.Account
             returnUrl ??= Url.Content("~/");
 
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             ReturnUrl = returnUrl;
         }

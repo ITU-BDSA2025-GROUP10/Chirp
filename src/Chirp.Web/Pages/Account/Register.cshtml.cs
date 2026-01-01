@@ -27,6 +27,8 @@ namespace Chirp.Web.Pages.Account
         public InputModel Input { get; set; }
 
         public string ReturnUrl { get; set; }
+        
+        public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
         {
@@ -53,6 +55,8 @@ namespace Chirp.Web.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             ReturnUrl = returnUrl;
         }
         

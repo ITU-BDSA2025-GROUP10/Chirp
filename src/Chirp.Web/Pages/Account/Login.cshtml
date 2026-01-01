@@ -1,41 +1,51 @@
 @page
-@model LoginModel
+@model Chirp.Web.Pages.Account.LoginModel
 @{
     ViewData["Title"] = "Log in";
+    Layout = "Shared/_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2>Use your username to log in.</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
-                    <label asp-for="Input.UserName" class="form-label">Username</label>
-                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
-                </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
-                    </label>
-                </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <h2>Log in</h2>
+        <p class="muted">Welcome back to Chirp.</p>
+
+        <form method="post" class="auth-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <label class="auth-label" asp-for="Input.UserName">Username</label>
+            <input asp-for="Input.UserName" class="auth-input" autocomplete="username" />
+            <span asp-validation-for="Input.UserName" class="text-danger"></span>
+
+            <label class="auth-label" asp-for="Input.Password">Password</label>
+            <input asp-for="Input.Password" class="auth-input" autocomplete="current-password" />
+            <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+            <label class="auth-checkbox">
+                <input asp-for="Input.RememberMe" />
+                Remember me
+            </label>
+
+            <button type="submit" class="auth-primary">Log in</button>
+        </form>
+
+        @* External login button *@
+        @if (Model.ExternalLogins?.Count > 0)
+        {
+            <div class="auth-divider"><span>or</span></div>
+
+            <form asp-page="./ExternalLogin"
+                  asp-route-provider="GitHub"
+                  asp-route-returnUrl="@Model.ReturnUrl"
+                  method="post">
+                <button type="submit" class="auth-oauth github">
+                    Continue with GitHub
+                </button>
             </form>
-        </section>
+        }
+
+        <p class="auth-footer">
+            No account? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Create one</a>
+        </p>
     </div>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

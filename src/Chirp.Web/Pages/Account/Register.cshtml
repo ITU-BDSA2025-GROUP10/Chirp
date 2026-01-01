@@ -1,42 +1,54 @@
 @page
-@model RegisterModel
+@model Chirp.Web.Pages.Account.RegisterModel
 @{
     ViewData["Title"] = "Register";
+    Layout = "Shared/_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <h2>Create account</h2>
+        <p class="muted">Join Chirp and start cheeping.</p>
 
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
+        <form method="post" class="auth-form">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
-                <label asp-for="Input.UserName">Username</label>
-                <span asp-validation-for="Input.UserName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+
+            <label class="auth-label" asp-for="Input.UserName">Username</label>
+            <input asp-for="Input.UserName" class="auth-input" autocomplete="username" />
+            <span asp-validation-for="Input.UserName" class="text-danger"></span>
+
+            <label class="auth-label" asp-for="Input.Email">Email</label>
+            <input asp-for="Input.Email" class="auth-input" autocomplete="email" />
+            <span asp-validation-for="Input.Email" class="text-danger"></span>
+
+            <label class="auth-label" asp-for="Input.Password">Password</label>
+            <input asp-for="Input.Password" class="auth-input" autocomplete="new-password" />
+            <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+            <label class="auth-label" asp-for="Input.ConfirmPassword">Confirm password</label>
+            <input asp-for="Input.ConfirmPassword" class="auth-input" autocomplete="new-password" />
+            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+
+            <button type="submit" class="auth-primary">Create account</button>
         </form>
+
+        @if (Model.ExternalLogins?.Count > 0)
+        {
+            <div class="auth-divider"><span>or</span></div>
+
+            <form asp-page="./ExternalLogin"
+                  asp-route-provider="GitHub"
+                  asp-route-returnUrl="@Model.ReturnUrl"
+                  method="post">
+                <button type="submit" class="auth-oauth github">
+                    Sign up with GitHub
+                </button>
+            </form>
+        }
+
+        <p class="auth-footer">
+            Already have an account? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Log in</a>
+        </p>
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
