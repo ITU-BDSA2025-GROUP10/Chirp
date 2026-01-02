@@ -73,7 +73,7 @@ The diagram illustrates representative dependencies between layers following the
 
 ## 1.3 Architecture of the Deployed Application
 
-![Untitled](https://hackmd.io/_uploads/HJLnhdp7Ze.jpg)
+![Architecture_of_deployed_application.png](images/Architecture_of_deployed_application.png)
 
 
 The Chirp application is deployed as a client-server web application on Microsoft Azure App Service. The server consists of three layers: Chirp.Web, which handles the user interface and HTTP requests, Chirp.Core, which contains the domain models and business logic, and Chirp.Infrastructure, which manages data persistens using repositories and Entitiy Framework Core.
