@@ -11,6 +11,7 @@ public class CommentRepository : ICommentRepository
         _context = context;
     }
 
+    // Get comments through the id of the cheep they belong to
     public async Task<IEnumerable<CommentDTO>> GetCommentsByCheepIdAsync(int cheepId)
     {
         return await _context.Comments
@@ -28,12 +29,14 @@ public class CommentRepository : ICommentRepository
             .ToListAsync();
     }
 
+    // Get amount of comments on a cheep
     public async Task<int> GetCommentCountByCheepIdAsync(int cheepId)
     {
         return await _context.Comments
             .CountAsync(c => c.CheepId == cheepId);
     }
 
+    // Create a comment
     public async Task CreateCommentAsync(CommentDTO comment)
     {
         var author = await _context.Authors
@@ -62,6 +65,7 @@ public class CommentRepository : ICommentRepository
         await _context.SaveChangesAsync();
     }
 
+    // Delete a comment
     public async Task DeleteCommentAsync(int commentId)
     {
         var comment = await _context.Comments.FindAsync(commentId);
