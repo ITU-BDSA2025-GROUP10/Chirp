@@ -5,22 +5,9 @@ author:
   - Andreas Bank Hyldal (ahyl@itu.dk)
   - Cornelius Baasch Andersen (coan@itu.dk)
   - Jacob Folkmann Præstegaard (jafo@itu.dk)
-  - Jacob Hørberg (jacho@itu.dk)
+  - Jacob Hørberg (jacho@itu.dk)s
   - Jogvan Andreas á Lad Jacobsen (jogv@itu.dk)
 date: January 2026
----
-
-# _Chirp!_ Project Report
-
-**ITU BDSA 2025 – Group 10**
-
-**Authors**  
-Andreas Bank Hyldal `<ahyl@itu.dk>`  
-Cornelius Baasch Andersen `<coan@itu.dk>`  
-Jacob Folkmann Præstegaard `<jafo@itu.dk>`  
-Jacob Hørberg `<jacho@itu.dk>`  
-Jogvan Andreas á Lad Jacobsen `<jogv@itu.dk>`
-
 ---
 
 # Table of Contents
