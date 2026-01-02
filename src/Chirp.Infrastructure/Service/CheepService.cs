@@ -14,6 +14,7 @@ public class CheepService : ICheepService
         _authorRepo = authorRepo;
     }
 
+    // Get list of author ids that the user is following
     private async Task<List<int>> GetFollowedIdsAsync(string? currentAuthor)
     {
         if (string.IsNullOrEmpty(currentAuthor))
@@ -21,9 +22,12 @@ public class CheepService : ICheepService
 
         return await _authorRepo.GetFollowedAuthorIdsAsync(currentAuthor);
     }
+    
+    // Get all cheeps on public timeline - we use this one for unauthorized users
     public List<CheepViewModel> GetCheeps(int page = 0, int pageSize = 32)
         => GetCheeps(null, page, pageSize);
 
+    // Get all cheeps from the authors we follow - used on following timeline
     public List<CheepViewModel> GetCheeps(string? currentAuthor, int page = 0, int pageSize = 32)
     {
         var followedIds = GetFollowedIdsAsync(currentAuthor).Result;
@@ -39,6 +43,7 @@ public class CheepService : ICheepService
         )).ToList();
     }
 
+    // Get all cheeps from a specific author - we use this for authorTimeline
     public List<CheepViewModel> GetCheepsFromAuthor(string author, int page = 0, int pageSize = 32)
         => GetCheepsFromAuthor(author, null, page, pageSize);
 
@@ -61,6 +66,7 @@ public class CheepService : ICheepService
         )).ToList();
     }
 
+    // Create cheep - we call the cheepRepository to create a cheep
     public async Task CreateCheepAsync(string authorName, string text)
     {
         var dto = new CheepDTO
@@ -72,6 +78,7 @@ public class CheepService : ICheepService
         await _cheepRepo.CreateCheepAsync(dto);
     }
     
+    // Get all cheeps from the authors we follow - we call the cheepRepo to get cheeps
     public List<CheepViewModel> GetCheepsFromFollowing(string currentAuthor, int page = 0, int pageSize = 32)
     {
         var followedIds = GetFollowedIdsAsync(currentAuthor).Result;

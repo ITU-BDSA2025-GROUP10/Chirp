@@ -12,7 +12,8 @@ public class CheepRepository : ICheepRepository
     {
         _db = db;
     }
-
+    
+    // Get a list of cheeps from one or more authors - used for public timeline or specific authors timeline
     public async Task<List<CheepDTO>> ReadCheepsAsync(string? author = null, int page = 0, int pageSize = 32)
     {
         var q = _db.Cheeps
@@ -41,6 +42,7 @@ public class CheepRepository : ICheepRepository
         return items;
     }
 
+    // Get cheeps from specific authors - used for our following timeline
     public async Task<List<CheepDTO>> ReadCheepsFromAuthorIdsAsync(List<int> authorIds, int page = 0, int pageSize = 32)
     {
         if (authorIds == null || authorIds.Count == 0)
@@ -68,6 +70,7 @@ public class CheepRepository : ICheepRepository
         return items;
     }
 
+    // Creates cheep
     public async Task<int> CreateCheepAsync(CheepDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Author))
@@ -96,6 +99,7 @@ public class CheepRepository : ICheepRepository
         return msg.CheepId;
     }
 
+    // Update cheep - not used, can be used for future feature to update our cheeps
     public async Task UpdateCheepAsync(CheepDTO dto)
     {
         var msg = await _db.Cheeps.FirstOrDefaultAsync(m => m.CheepId == dto.Id);
@@ -106,7 +110,8 @@ public class CheepRepository : ICheepRepository
 
         await _db.SaveChangesAsync();
     }
-
+    
+    // Delete cheep - We do not use it, but can be used for future feature.
     public async Task DeleteCheepAsync(int id)
     {
         var msg = await _db.Cheeps.FirstOrDefaultAsync(m => m.CheepId == id);

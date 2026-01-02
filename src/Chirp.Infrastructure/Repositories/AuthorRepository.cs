@@ -82,6 +82,7 @@ public class AuthorRepository : IAuthorRepository
         await _db.SaveChangesAsync();
     }
     
+    // Delete author based on their email
     public async Task DeleteAuthorByEmailAsync(string email)
     {
         var authorId = await getAuthorByEmailAsync(email);
@@ -122,6 +123,7 @@ public class AuthorRepository : IAuthorRepository
         await _db.SaveChangesAsync();
     }
     
+    // Delete follower from database
     public async Task DeleteFollowingAsync(int followerId, int followedId)
     {
         var follow = await _db.Followings
@@ -136,6 +138,7 @@ public class AuthorRepository : IAuthorRepository
         }
     }
     
+    // Get an author and who they follow
     public async Task<Author> GetAuthorWithFollowingAsync(int authorId)
     {
         return await _db.Authors
