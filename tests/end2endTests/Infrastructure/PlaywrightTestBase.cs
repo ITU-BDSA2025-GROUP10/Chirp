@@ -1,14 +1,15 @@
-using Microsoft. Playwright;
-using Microsoft.Extensions. Configuration;
+using Microsoft.Playwright;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore. Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Chirp.Infrastructure;
 using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Identity;
 using Chirp.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
 public abstract class PlaywrightTestBase : IAsyncLifetime
 {
@@ -37,13 +38,14 @@ public abstract class PlaywrightTestBase : IAsyncLifetime
         _connection = new SqliteConnection("DataSource=:memory:");
         await _connection.OpenAsync();
 
-        
+
+
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
-                    
+
                     var descriptor = services.SingleOrDefault(
                         d => d.ServiceType == typeof(DbContextOptions<ChatDBContext>));
                     if (descriptor != null)
@@ -51,40 +53,49 @@ public abstract class PlaywrightTestBase : IAsyncLifetime
                         services.Remove(descriptor);
                     }
 
-                    
+
                     services.AddDbContext<ChatDBContext>(options =>
                     {
                         options.UseSqlite(_connection);
                     });
 
-                    
-                    var sp = services.BuildServiceProvider();
-                    using var scope = sp.CreateScope();
-                    var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices. GetRequiredService<ChatDBContext>();
-                    var userManager = scopedServices.GetRequiredService<UserManager<Author>>();
-
-                    
-                    db.Database.EnsureCreated();
-
-                  
-                    var testUser = new Author
+                    // Disable antiforgery token validation for testing
+                    services.AddMvc(options =>
                     {
-                        UserName = TestEmail,
-                        Email = TestEmail,
-                        EmailConfirmed = true
-                    };
-                    userManager.CreateAsync(testUser, TestPassword).Wait();
+                        options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
+                    });
                 });
 
                 builder.UseUrls(BaseUrl);
                 builder.UseEnvironment("Development");
             });
 
-        
-        _ = _factory.Server; 
 
-        
+        _ = _factory.Server;
+
+        // Create test user using the factory's services
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ChatDBContext>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
+
+            // Ensure database is created
+            await db.Database.EnsureCreatedAsync();
+
+            // Create test user
+            var testUser = new Author
+            {
+                UserName = TestEmail,
+                Email = TestEmail,
+                EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(testUser, TestPassword);
+            if (!result.Succeeded)
+            {
+                throw new Exception($"Failed to create test user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+
         await Task.Delay(1000);
 
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
